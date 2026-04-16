@@ -525,7 +525,7 @@
                   v-for="item in category.items"
                   :key="item"
                   :model-value="apptForm.items.includes(item)"
-                  @change="(val) => toggleItem(item, val === true)"
+                  @change="onItemCheckedChange(item, $event)"
                 >
                   {{ item }}
                 </el-checkbox>
@@ -803,6 +803,10 @@ function toggleItem(item: string, checked: boolean) {
   } else {
     apptForm.items = apptForm.items.filter((i) => i !== item);
   }
+}
+
+function onItemCheckedChange(item: string, value: unknown) {
+  toggleItem(item, value === true);
 }
 
 function onDoctorChange(id: number) {

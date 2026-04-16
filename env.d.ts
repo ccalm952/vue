@@ -17,6 +17,11 @@ interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
 
+declare global {
+  const ElMessage: typeof import("element-plus/es").ElMessage;
+  const ElMessageBox: typeof import("element-plus/es").ElMessageBox;
+}
+
 declare module "*.vue" {
   import type { DefineComponent } from "vue";
 
