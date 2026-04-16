@@ -23,43 +23,6 @@ export default defineConfig(({ command }) => ({
     }),
     command === "serve" && basicSsl(),
   ].filter(Boolean),
-  build: {
-    // 按依赖分组拆包，尽量减小入口 chunk 体积。
-    // https://rolldown.rs/in-depth/manual-code-splitting
-    rolldownOptions: {
-      output: {
-        codeSplitting: {
-          minSize: 20_000,
-          groups: [
-            {
-              name: "echarts",
-              test: /node_modules[\\/](echarts|zrender)[\\/]/,
-              priority: 3,
-              // 体积过大时继续拆分，避免单个图表包过大。
-              maxSize: 450_000,
-            },
-            {
-              name: "element-plus",
-              test: /node_modules[\\/]element-plus[\\/]/,
-              priority: 2,
-              maxSize: 450_000,
-            },
-            {
-              name: "vue-vendor",
-              // 正则保持简单，避免 Rolldown 解析 bundled 配置时出问题。
-              test: /node_modules[\\/](vue|vue-router|pinia)[\\/]/,
-              priority: 2,
-            },
-            {
-              name: "vendor",
-              test: /node_modules[\\/]/,
-              priority: 1,
-            },
-          ],
-        },
-      },
-    },
-  },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
