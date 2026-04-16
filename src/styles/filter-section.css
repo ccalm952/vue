@@ -1,0 +1,39 @@
+/** 筛选区 el-card；卡片上加 class="filter-section" */
+
+.filter-section.el-card {
+  /* 筛选卡片本体：去掉 EP 默认外边距与内边距 */
+  margin: 0;
+  padding: 0;
+}
+
+.filter-section .el-card__body {
+  /* 卡片 body：纵向 flex，标题与表单 16px 间距 */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filter-section .el-form.el-form--inline {
+  /* 行内表单：横向 flex 可换行，项间距 16px */
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 0;
+}
+
+.filter-section .el-form-item {
+  /* 表单项：覆盖 EP 默认上下 margin */
+  margin: 0;
+}
+
+.filter-section .el-form-item__content {
+  /* 表单项内容区：多控件时用 gap */
+  gap: 16px;
+}
+
+.filter-section .el-button {
+  /* 按钮：去相邻 margin，间距交给 gap */
+  margin: 0;
+}

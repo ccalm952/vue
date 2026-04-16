@@ -1,0 +1,43 @@
+/** 全站字体：内嵌 Inter（正常体）→ 苹方（macOS）→ 微软雅黑（Windows）→ 系统无衬线 */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/InterVariable.woff2") format("woff2");
+}
+
+:root,
+html {
+  --el-font-family: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+html,
+body {
+  font-family: var(--el-font-family);
+}
+
+/* 原生 input 的 UA 默认 font 会盖住继承；EP .el-input__inner 未声明 font-family */
+.el-input__inner,
+.el-textarea__inner {
+  font-family: var(--el-font-family);
+}
+
+.el-input__inner::placeholder,
+.el-textarea__inner::placeholder {
+  font-family: var(--el-font-family);
+}
+
+/* <button> UA font；EP .el-button 未统一 font-family */
+.el-button {
+  font-family: var(--el-font-family);
+}
+
+/* 日期/时间选择器下拉（teleport 到 body，面板内日历数字与星期） */
+.el-picker__popper,
+.el-picker-panel,
+.el-date-picker,
+.el-date-range-picker,
+.el-time-panel {
+  font-family: var(--el-font-family);
+}

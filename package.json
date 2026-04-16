@@ -1,0 +1,46 @@
+{
+  "name": "vue",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:server": "pnpm --dir server start:dev",
+    "build": "vue-tsc --build && vite build",
+    "build:server": "pnpm --dir server build",
+    "preview": "vite preview",
+    "type-check": "vue-tsc --build",
+    "start:server": "pnpm --dir server start:prod",
+    "lint": "oxlint src server/src",
+    "lint:fix": "oxlint src server/src --fix",
+    "format": "oxfmt src server/src",
+    "check": "pnpm type-check && pnpm lint"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
+    "axios": "^1.15.0",
+    "echarts": "^6.0.0",
+    "element-plus": "^2.13.7",
+    "pinia": "^3.0.4",
+    "vue": "^3.5.31",
+    "vue-router": "^5.0.4"
+  },
+  "devDependencies": {
+    "@tsconfig/node24": "^24.0.4",
+    "@types/node": "^25.6.0",
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
+    "@vitejs/plugin-vue": "^6.0.5",
+    "@vue/tsconfig": "^0.9.1",
+    "oxfmt": "^0.44.0",
+    "oxlint": "~1.59.0",
+    "typescript": "~6.0.0",
+    "unplugin-auto-import": "^21.0.0",
+    "unplugin-vue-components": "^32.0.0",
+    "vite": "^8.0.8",
+    "vue-tsc": "^3.2.6"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "packageManager": "pnpm@10.33.0"
+}

@@ -1,0 +1,67 @@
+/**
+ * 隐藏滚动条外观，仍可用滚轮/触控板滚动
+ * 覆盖 html / body / #app 与主布局内容区
+ */
+
+/* 去掉浏览器默认的 body 外边距，避免出现页面四周一圈白边 */
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+html,
+body,
+#app {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE / 旧 Edge */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+#app::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/*
+ * Element Plus 弹窗 lock-scroll（useLockscreen）在打开时会给 body 加
+ * .el-popup-parent--hidden，并可能设置 inline style：
+ * width: calc(100% - getScrollBarWidth)。
+ * 本项目主滚动在 .app-main，视口侧常无 body 纵向滚动条，但 getScrollBarWidth
+ * 仍会测出非零宽度，导致 body 被横向收窄，右侧露出一条「白边」并挤压整页布局。
+ * 保持 body 在锁屏时仍为 100% 宽即可（滚动仍由 .app-main 承担）。
+ */
+body.el-popup-parent--hidden {
+  width: 100% !important;
+}
+
+/* 带布局的页面：主内容滚动区（含 Element Plus el-main 双类名） */
+.app-main,
+.app-main.el-main,
+main.app-main {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.app-main::-webkit-scrollbar,
+.app-main.el-main::-webkit-scrollbar,
+main.app-main::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* 页面内其它可滚动容器（如预约看板 .board-grid-wrapper），隐藏滚动条外观，仍可滚动 */
+.scrollbar-hide,
+.board-grid-wrapper {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar,
+.board-grid-wrapper::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
