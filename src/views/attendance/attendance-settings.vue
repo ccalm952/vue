@@ -111,7 +111,80 @@ import { geolocateWithAmap, loadAmap, reverseGeocodeWithAmap } from "@/utils/ama
 const router = useRouter();
 
 type GeofenceSource = "database" | "env" | "none";
-type AMapInstance = any;
+
+interface ApiResponse<T> {
+  data: T;
+}
+
+interface GeofenceConfigData {
+  enabled?: boolean;
+  centerLat?: number;
+  centerLng?: number;
+  radiusM?: number;
+  label?: string;
+  source?: GeofenceSource;
+}
+
+interface AMapLngLatLike {
+  getLat(): number;
+  getLng(): number;
+}
+
+interface AMapEventLike {
+  lnglat?: AMapLngLatLike;
+}
+
+interface AMapMarkerLike {
+  getPosition(): AMapLngLatLike;
+  setPosition(position: AMapLngLatLike): void;
+  on(eventName: "dragend", handler: (event: AMapEventLike) => void): void;
+}
+
+interface AMapCircleLike {
+  setCenter(center: AMapLngLatLike): void;
+  setRadius(radius: number): void;
+}
+
+interface AMapMapLike {
+  addControl(control: unknown): void;
+  add(target: unknown): void;
+  on(eventName: "click", handler: (event: AMapEventLike) => void): void;
+  setCenter(center: AMapLngLatLike): void;
+  setFitView(
+    targets: unknown[],
+    immediately: boolean,
+    padding: [number, number, number, number],
+  ): void;
+  resize(): void;
+  destroy(): void;
+}
+
+interface AMapNamespaceLike {
+  LngLat: new (lng: number, lat: number) => AMapLngLatLike;
+  Map: new (
+    container: HTMLElement,
+    options: {
+      viewMode: string;
+      zoom: number;
+      center: AMapLngLatLike;
+      resizeEnable: boolean;
+    },
+  ) => AMapMapLike;
+  ToolBar: new () => unknown;
+  Marker: new (options: {
+    position: AMapLngLatLike;
+    draggable: boolean;
+    cursor: string;
+  }) => AMapMarkerLike;
+  Circle: new (options: {
+    center: AMapLngLatLike;
+    radius: number;
+    strokeColor: string;
+    strokeWeight: number;
+    fillColor: string;
+    fillOpacity: number;
+  }) => AMapCircleLike;
+}
 
 const geofenceCfg = reactive({
   enabled: false,
@@ -134,10 +207,10 @@ const clearingFence = ref(false);
 const reverseGeoLoading = ref(false);
 const fenceMapRef = ref<HTMLElement | null>(null);
 
-let AMapRef: AMapInstance | null = null;
-let mapInstance: AMapInstance | null = null;
-let fenceMarker: AMapInstance | null = null;
-let fenceCircle: AMapInstance | null = null;
+let AMapRef: AMapNamespaceLike | null = null;
+let mapInstance: AMapMapLike | null = null;
+let fenceMarker: AMapMarkerLike | null = null;
+let fenceCircle: AMapCircleLike | null = null;
 
 function updateFenceCircleGeometry() {
   if (!fenceMarker || !fenceCircle) return;
@@ -160,7 +233,7 @@ function syncFenceMapFromEditor() {
 async function initFenceMap() {
   if (!fenceMapRef.value || mapInstance) return;
 
-  const AMap = await loadAmap();
+  const AMap = (await loadAmap()) as AMapNamespaceLike;
   AMapRef = AMap;
 
   const lat = Number(fenceEditor.centerLat) || 39.9042;
@@ -193,7 +266,7 @@ async function initFenceMap() {
   });
   mapInstance.add(fenceCircle);
 
-  fenceMarker.on("dragend", (event: any) => {
+  fenceMarker.on("dragend", (event: AMapEventLike) => {
     const lngLat = event?.lnglat || fenceMarker?.getPosition();
     if (!lngLat) return;
     fenceEditor.centerLat = Math.round(Number(lngLat.getLat()) * 1e6) / 1e6;
@@ -201,7 +274,7 @@ async function initFenceMap() {
     updateFenceCircleGeometry();
   });
 
-  mapInstance.on("click", (event: any) => {
+  mapInstance.on("click", (event: AMapEventLike) => {
     const lngLat = event?.lnglat;
     if (!lngLat || !fenceMarker) return;
     fenceEditor.centerLat = Math.round(Number(lngLat.getLat()) * 1e6) / 1e6;
@@ -257,7 +330,7 @@ function applyResolvedGeofenceToEditor(d: {
 
 async function loadGeofence() {
   try {
-    const res: any = await getGeofenceConfigApi();
+    const res = (await getGeofenceConfigApi()) as ApiResponse<GeofenceConfigData>;
     const d = res.data;
     if (d) {
       geofenceCfg.enabled = !!d.enabled;

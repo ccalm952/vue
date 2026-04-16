@@ -229,6 +229,16 @@ interface SummaryPayload {
   noRecordInMonth: NoRecordRow[];
 }
 
+interface ApiResponse<T> {
+  data: T;
+}
+
+interface AttendanceRecord {
+  date: string;
+  type: string;
+  punchTime: string;
+}
+
 const summary = ref<SummaryPayload | null>(null);
 
 /** 仅含当日至少有一条打卡的日期；与打卡页历史表列一致 */
@@ -327,12 +337,12 @@ async function onExpandChange(row: EmployeeRow, expandedRows: EmployeeRow[]) {
   detailLoading.value[row.userId] = true;
   detailLoadFailed.value[row.userId] = false;
   try {
-    const res: any = await getAttendanceRecordsApi({
+    const res = (await getAttendanceRecordsApi({
       userId: row.userId,
       startDate: summary.value.startDate,
       endDate: summary.value.endDate,
-    });
-    const records = (res.data || []) as Array<{ date: string; type: string; punchTime: string }>;
+    })) as ApiResponse<AttendanceRecord[]>;
+    const records = res.data || [];
     detailByUserId.value[row.userId] = buildPunchDayRows(records, shiftMerged.value);
   } catch {
     detailLoadFailed.value[row.userId] = true;
@@ -368,12 +378,12 @@ async function loadData() {
   }
   loading.value = true;
   try {
-    const res: any = await getAttendanceAdminMonthlySummaryApi({
+    const res = (await getAttendanceAdminMonthlySummaryApi({
       month: m,
       overtimeMorningEnd: shiftMerged.value.overtimeMorningNormalEnd,
       overtimeAfternoonEnd: shiftMerged.value.overtimeAfternoonNormalEnd,
-    });
-    summary.value = res.data as SummaryPayload;
+    })) as ApiResponse<SummaryPayload>;
+    summary.value = res.data;
     detailByUserId.value = {};
     detailLoading.value = {};
     detailLoadFailed.value = {};

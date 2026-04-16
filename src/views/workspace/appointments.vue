@@ -163,6 +163,10 @@ interface PatientSummary {
   age: string | number;
 }
 
+interface ApiResponse<T> {
+  data: T;
+}
+
 const DASH = "—";
 
 const EMPTY_PATIENT_SUMMARY = (): PatientSummary => ({
@@ -264,7 +268,7 @@ async function prefetchPatientSummaries(forAppointments: readonly Appointment[],
   const next: Record<number, PatientSummary> = { ...patientSummaryById.value };
   await forEachWithConcurrency(ids, PATIENT_PREFETCH_CONCURRENCY, async (id) => {
     try {
-      const res: any = await getPatientDetailApi(id);
+      const res = (await getPatientDetailApi(id)) as ApiResponse<Record<string, unknown>>;
       const s = patientSummaryFromApi(res.data);
       if (s) next[id] = s;
       else next[id] = EMPTY_PATIENT_SUMMARY();
@@ -279,7 +283,7 @@ async function prefetchPatientSummaries(forAppointments: readonly Appointment[],
 /** 打开气泡时总是拉取最新患者档案，避免列表缓存停留在改名前 */
 async function ensurePatientSummary(appt: Appointment) {
   try {
-    const res: any = await getPatientDetailApi(appt.patientId);
+    const res = (await getPatientDetailApi(appt.patientId)) as ApiResponse<Record<string, unknown>>;
     const s = patientSummaryFromApi(res.data);
     if (s) {
       patientSummaryById.value = { ...patientSummaryById.value, [appt.patientId]: s };
@@ -457,7 +461,7 @@ async function fetchAppointments() {
   const start = formatDate(mon);
   const end = formatDate(addDays(mon, 7));
   try {
-    const res: any = await getWeekAppointmentsApi(start, end);
+    const res = (await getWeekAppointmentsApi(start, end)) as ApiResponse<Appointment[]>;
     const list: Appointment[] = res.data || [];
     appointments.value = list;
     // 不阻塞首屏；限制并发 + epoch 避免切周竞态与浏览器/服务端被瞬时打满

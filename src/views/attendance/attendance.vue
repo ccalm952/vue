@@ -75,13 +75,28 @@
     <el-card class="attendance-history" shadow="never">
       <template v-if="historyRows.length">
         <div class="attendance-history-week-nav">
-          <el-button size="small" text type="primary" @click="shiftHistoryStripWeek(-1)">
+          <el-button
+            class="attendance-history-week-nav-btn"
+            text
+            type="primary"
+            @click="shiftHistoryStripWeek(-1)"
+          >
             上一周
           </el-button>
-          <el-button size="small" text type="primary" @click="shiftHistoryStripWeek(1)">
+          <el-button
+            class="attendance-history-week-nav-btn"
+            text
+            type="primary"
+            @click="shiftHistoryStripWeek(1)"
+          >
             下一周
           </el-button>
-          <el-button size="small" text type="primary" @click="goToCurrentWeek">
+          <el-button
+            class="attendance-history-week-nav-btn"
+            text
+            type="primary"
+            @click="goToCurrentWeek"
+          >
             回到本周
           </el-button>
         </div>
@@ -150,7 +165,7 @@
           </div>
         </div>
       </template>
-      <el-empty v-else class="attendance-history-empty-block" description="暂无打卡记录" />
+      <el-empty v-else description="暂无打卡记录" />
     </el-card>
   </div>
 </template>
@@ -210,9 +225,21 @@ const geofenceCfg = reactive({
   label: "",
 });
 
+interface ApiResponse<T> {
+  data: T;
+}
+
+interface GeofenceConfigData {
+  enabled?: boolean;
+  centerLat?: number;
+  centerLng?: number;
+  radiusM?: number;
+  label?: string;
+}
+
 async function loadGeofence() {
   try {
-    const res: any = await getGeofenceConfigApi();
+    const res = (await getGeofenceConfigApi()) as ApiResponse<GeofenceConfigData | null>;
     const d = res.data;
     if (d) {
       geofenceCfg.enabled = !!d.enabled;
@@ -292,6 +319,10 @@ interface PunchRecord {
   latitude: number;
   longitude: number;
   address: string;
+}
+
+interface AttendanceRecord extends PunchRecord {
+  date: string;
 }
 
 const todayRecords = ref<PunchRecord[]>([]);
@@ -493,7 +524,7 @@ function formatOvertime(minutes: number): string {
 
 /* ── 历史记录 ── */
 const dateRange = ref<string[] | null>(null);
-const historyRecords = ref<any[]>([]);
+const historyRecords = ref<AttendanceRecord[]>([]);
 
 function fmtDate(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -520,13 +551,13 @@ interface HistoryRow {
   address: string;
 }
 
-function timeFromRecord(r: any): string {
+function timeFromRecord(r: AttendanceRecord): string {
   const d = new Date(r.punchTime);
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
 const historyRows = computed<HistoryRow[]>(() => {
-  const grouped: Record<string, Record<string, any>> = {};
+  const grouped: Record<string, Record<string, AttendanceRecord>> = {};
   for (const r of historyRecords.value) {
     const dateKey = r.date as string;
     let byType = grouped[dateKey];
@@ -546,10 +577,9 @@ const historyRows = computed<HistoryRow[]>(() => {
         minutesFromMidnight(shiftMerged.value.overtimeMorningNormalEnd),
         minutesFromMidnight(shiftMerged.value.overtimeAfternoonNormalEnd),
       );
-      const addresses = Object.values(recs)
-        .map((r: any) => r.address)
-        .filter(Boolean);
-      const addr = (r: any) => (typeof r?.address === "string" ? r.address : "");
+      const addresses = Object.values(recs).map((record) => record.address).filter(Boolean);
+      const addr = (record: AttendanceRecord | undefined) =>
+        typeof record?.address === "string" ? record.address : "";
       return {
         date,
         morningIn: recs.morning_in ? timeFromRecord(recs.morning_in) : null,
@@ -720,7 +750,7 @@ async function loadTodayRecords() {
   const userId = authStore.userInfo?.userId;
   if (!userId) return;
   try {
-    const res: any = await getTodayRecordsApi(userId);
+    const res = (await getTodayRecordsApi(userId)) as ApiResponse<PunchRecord[]>;
     todayRecords.value = res.data || [];
   } catch {
     /* interceptor handles */
@@ -759,12 +789,12 @@ async function loadHistory() {
   const userId = authStore.userInfo?.userId;
   if (!userId) return;
   try {
-    const params: any = { userId };
+    const params: { userId: number; startDate?: string; endDate?: string } = { userId };
     if (dateRange.value && dateRange.value.length === 2) {
       params.startDate = dateRange.value[0];
       params.endDate = dateRange.value[1];
     }
-    const res: any = await getAttendanceRecordsApi(params);
+    const res = (await getAttendanceRecordsApi(params)) as ApiResponse<AttendanceRecord[]>;
     historyRecords.value = res.data || [];
   } catch {
     /* interceptor handles */
@@ -918,21 +948,25 @@ onUnmounted(() => {
 }
 
 /* ═══ 历史记录 ═══ */
-.attendance-history {
-  margin: 0;
-}
-
-.attendance-history-empty-block {
-  padding: 24px 0;
+.attendance-history :deep(.el-card__body) {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .attendance-history-week-nav {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 16px;
   justify-content: center;
-  margin: 0 0 4px;
+  height: 32px;
+}
+
+.attendance-history-week-nav-btn {
+  padding: 8px;
+  margin: 0;
 }
 
 .attendance-history-strip-outer {

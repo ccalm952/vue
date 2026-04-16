@@ -120,6 +120,17 @@ interface StaffRow {
   createdAt: string;
 }
 
+interface ApiResponse<T> {
+  data: T;
+}
+
+interface StaffListData {
+  list: StaffRow[];
+  total: number;
+}
+
+type StaffFormPayload = Record<string, unknown>;
+
 const roleOptions = ["管理员", "医生", "护士", "前台", "其他"];
 
 const loading = ref(false);
@@ -163,11 +174,11 @@ function formatCreatedAt(value: string) {
 async function fetchList() {
   loading.value = true;
   try {
-    const res: any = await getStaffListApi({
+    const res = (await getStaffListApi({
       keyword: keyword.value.trim() || undefined,
       page: page.value,
       pageSize: pageSize.value,
-    });
+    })) as ApiResponse<StaffListData>;
     const data = res.data || {};
     list.value = data.list || [];
     total.value = data.total ?? 0;
@@ -231,7 +242,7 @@ async function submitForm() {
   saving.value = true;
   try {
     if (isEdit.value && editingId.value != null) {
-      const payload: Record<string, any> = {
+      const payload: StaffFormPayload = {
         name: form.name,
         phone: form.phone,
         role: form.role,

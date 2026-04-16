@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "pnpm exec nest start",
+    "start": "pnpm run build && node dist/main",
     "start:dev": "pnpm exec nest start --watch",
     "build": "pnpm exec nest build",
-    "start:prod": "node dist/main"
+    "start:prod": "pnpm run build && node dist/main"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",

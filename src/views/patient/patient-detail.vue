@@ -578,6 +578,10 @@ interface PatientDetail {
   lastVisitTime: string;
 }
 
+interface ApiResponse<T> {
+  data: T;
+}
+
 const route = useRoute();
 const router = useRouter();
 
@@ -602,6 +606,48 @@ interface VisitAppointmentRow {
   items?: string;
   remark?: string;
   createdAt?: string;
+}
+
+interface DoctorOption {
+  id: number;
+  name: string;
+  role: string;
+}
+
+interface BillingRecordItem {
+  id: number;
+  itemName: string;
+  quantity: number;
+}
+
+interface BillingRecord {
+  id: number;
+  payMethod?: string;
+  chargeTime: string;
+  operatorName?: string;
+  doctorName?: string;
+  totalAmount: number | string;
+  actualPaid?: number | string | null;
+  arrears?: number | string | null;
+  items?: BillingRecordItem[];
+}
+
+interface BillingStatsData {
+  totalReceivable?: number;
+  totalActualPaid?: number;
+  totalArrears?: number;
+  billingCount?: number;
+}
+
+interface StaffListRow {
+  id: number;
+  name: string;
+  role?: string;
+  enabled?: boolean;
+}
+
+interface StaffListData {
+  list?: StaffListRow[];
 }
 
 const visitRecords = ref<VisitAppointmentRow[]>([]);
@@ -661,7 +707,7 @@ function visitCreatorLine(ap: VisitAppointmentRow) {
 async function fetchVisitRecords(pid: number) {
   visitRecordsLoading.value = true;
   try {
-    const res: any = await getAppointmentListApi(pid);
+    const res = (await getAppointmentListApi(pid)) as ApiResponse<VisitAppointmentRow[]>;
     const list = (res?.data ?? []) as VisitAppointmentRow[];
     visitRecords.value = Array.isArray(list) ? list : [];
     visitRecords.value.sort((a, b) =>
@@ -677,7 +723,7 @@ async function fetchVisitRecords(pid: number) {
 async function fetchDetail(id: number) {
   loading.value = true;
   try {
-    const res: any = await getPatientDetailApi(id);
+    const res = (await getPatientDetailApi(id)) as ApiResponse<PatientDetail>;
     patient.value = res.data;
     addRecentPatient({ id: res.data.id, name: res.data.name });
     fetchVisitRecords(id);
@@ -717,7 +763,7 @@ const apptLoading = ref(false);
 const apptFormRef = ref<FormInstance>();
 const itemSearchKeyword = ref("");
 const collapsedCategories = ref(new Set<string>());
-const doctorList = ref<{ id: number; name: string; role: string }[]>([]);
+const doctorList = ref<DoctorOption[]>([]);
 
 const apptForm = reactive({
   visitType: "复诊",
@@ -819,7 +865,7 @@ async function tryOpenAppointmentFromRoute() {
 
 async function fetchDoctors() {
   try {
-    const res: any = await getDoctorListApi();
+    const res = (await getDoctorListApi()) as ApiResponse<DoctorOption[]>;
     doctorList.value = res.data;
   } catch {
     // 错误已在拦截器处理
@@ -873,7 +919,7 @@ const billingSaving = ref(false);
 const billingCategoryFilter = ref("");
 const collapsedBillingCategories = ref(new Set<string>());
 const feeItemsAll = ref<FeeItem[]>([]);
-const billingRecords = ref<any[]>([]);
+const billingRecords = ref<BillingRecord[]>([]);
 const billingStats = reactive({
   totalReceivable: 0,
   totalActualPaid: 0,
@@ -891,14 +937,9 @@ const billingStaffOptions = ref<BillingStaffOption[]>([]);
 
 async function fetchStaffForBilling() {
   try {
-    const res: any = await getStaffListApi({ page: 1, pageSize: 500 });
+    const res = (await getStaffListApi({ page: 1, pageSize: 500 })) as ApiResponse<StaffListData>;
     const data = res.data || {};
-    const list = (data.list || []) as {
-      id: number;
-      name: string;
-      role?: string;
-      enabled?: boolean;
-    }[];
+    const list = (data.list || []) as StaffListRow[];
     billingStaffOptions.value = list
       .filter((row) => row.enabled !== false)
       .map((row) => ({
@@ -1050,7 +1091,7 @@ function addFeeItemToCart(item: FeeItem) {
 async function fetchFeeItems() {
   if (feeItemsAll.value.length) return;
   try {
-    const res: any = await getFeeItemsApi();
+    const res = (await getFeeItemsApi()) as ApiResponse<FeeItem[]>;
     feeItemsAll.value = res.data;
   } catch {
     /* */
@@ -1059,7 +1100,7 @@ async function fetchFeeItems() {
 
 async function fetchBillingRecords(pid: number) {
   try {
-    const res: any = await getBillingListApi(pid);
+    const res = (await getBillingListApi(pid)) as ApiResponse<BillingRecord[]>;
     billingRecords.value = res.data;
   } catch {
     /* */
@@ -1068,7 +1109,7 @@ async function fetchBillingRecords(pid: number) {
 
 async function fetchBillingStats(pid: number) {
   try {
-    const res: any = await getBillingStatsApi(pid);
+    const res = (await getBillingStatsApi(pid)) as ApiResponse<BillingStatsData>;
     billingStats.totalReceivable = Number(res.data?.totalReceivable || 0);
     billingStats.totalActualPaid = Number(res.data?.totalActualPaid || 0);
     billingStats.totalArrears = Number(res.data?.totalArrears || 0);

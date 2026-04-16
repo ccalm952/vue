@@ -131,6 +131,10 @@ interface Row {
   toothRemark: string | null;
 }
 
+interface ApiResponse<T> {
+  data: T;
+}
+
 const loading = ref(false);
 const rows = ref<Row[]>([]);
 const selection = ref<Row[]>([]);
@@ -209,13 +213,13 @@ const filters = reactive({
 async function load() {
   loading.value = true;
   try {
-    const res: any = await getPlantingRecordsApi({
+    const res = (await getPlantingRecordsApi({
       name: filters.name || undefined,
       phone: filters.phone || undefined,
       chart: filters.chart || undefined,
       dateFrom: filters.dateRange?.[0] || undefined,
       dateTo: filters.dateRange?.[1] || undefined,
-    });
+    })) as ApiResponse<Row[]>;
     rows.value = res.data || [];
   } catch {
     rows.value = [];

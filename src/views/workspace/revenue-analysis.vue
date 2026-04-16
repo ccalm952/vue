@@ -147,6 +147,10 @@ interface PieSlice {
   value: number;
 }
 
+interface ApiResponse<T> {
+  data: T;
+}
+
 const queryMode = ref<QueryMode>("month");
 const chartDimension = ref<ChartDimension>("staff");
 const loading = ref(false);
@@ -239,7 +243,14 @@ async function runQuery() {
   loading.value = true;
   try {
     const { start, end } = resolveQueryBounds();
-    const res: any = await getRevenueAnalysisApi({ startDate: start, endDate: end });
+    const res = (await getRevenueAnalysisApi({
+      startDate: start,
+      endDate: end,
+    })) as ApiResponse<{
+      totalActual: number;
+      byStaff: PieSlice[];
+      byFeeSubcategory: PieSlice[];
+    }>;
     const d = res?.data ?? res;
     totalActual.value = Number(d?.totalActual) || 0;
     pieByStaff.value = Array.isArray(d?.byStaff) ? d.byStaff : [];
@@ -270,12 +281,12 @@ async function openDetailDialog(sliceName: string) {
   const { start, end } = resolveQueryBounds();
   const dimension = chartDimension.value;
   try {
-    const res: any = await getRevenueAnalysisDetailApi({
+    const res = (await getRevenueAnalysisDetailApi({
       startDate: start,
       endDate: end,
       dimension,
       sliceName,
-    });
+    })) as ApiResponse<{ list: RevenueDetailRow[] }>;
     const payload = res?.data ?? res;
     detailRows.value = Array.isArray(payload?.list) ? payload.list : [];
   } catch {

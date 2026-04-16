@@ -77,12 +77,18 @@ interface PlantingPatient {
   createdAt: string;
 }
 
+interface ApiResponse<T> {
+  data: T;
+}
+
 const patients = ref<PlantingPatient[]>([]);
 
 async function fetchList() {
   loading.value = true;
   try {
-    const res: any = await getPlantingPatientListApi(keyword.value.trim() || undefined);
+    const res = (await getPlantingPatientListApi(
+      keyword.value.trim() || undefined,
+    )) as ApiResponse<PlantingPatient[]>;
     patients.value = res.data ?? [];
   } finally {
     loading.value = false;

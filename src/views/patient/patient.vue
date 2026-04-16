@@ -190,6 +190,15 @@ interface Patient {
   tags?: string[];
 }
 
+interface ApiResponse<T> {
+  data: T;
+}
+
+interface PatientListData {
+  list: Patient[];
+  total: number;
+}
+
 const searchForm = reactive({
   keyword: "",
   dateRange: null as [string, string] | null,
@@ -216,14 +225,14 @@ async function fetchList() {
   try {
     const scopeRaw = route.query.scope;
     const scope = typeof scopeRaw === "string" && scopeRaw.trim() ? scopeRaw.trim() : undefined;
-    const res: any = await getPatientListApi({
+    const res = (await getPatientListApi({
       keyword: searchForm.keyword,
       startDate: searchForm.dateRange?.[0],
       endDate: searchForm.dateRange?.[1],
       page: pagination.page,
       pageSize: pagination.pageSize,
       scope,
-    });
+    })) as ApiResponse<PatientListData>;
     patients.value = res.data.list;
     total.value = res.data.total;
   } catch {

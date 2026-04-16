@@ -126,6 +126,23 @@ interface PatientSuggestion {
   age?: number;
 }
 
+interface ApiResponse<T> {
+  data: T;
+}
+
+interface PatientListItem {
+  id: number;
+  name: string;
+  phone?: string;
+  source?: string;
+  birthday?: string;
+  age?: number | string;
+}
+
+interface PatientListData {
+  list?: PatientListItem[];
+}
+
 let abortTimer: ReturnType<typeof setTimeout> | undefined;
 async function queryPatients(qs: string, cb: (list: PatientSuggestion[]) => void) {
   clearTimeout(abortTimer);
@@ -136,14 +153,18 @@ async function queryPatients(qs: string, cb: (list: PatientSuggestion[]) => void
   }
   abortTimer = setTimeout(async () => {
     try {
-      const res: any = await getPatientListApi({ keyword: kw, page: 1, pageSize: 20 });
-      const list: PatientSuggestion[] = (res.data?.list ?? []).map((p: any) => ({
-        value: p.name,
-        id: p.id,
-        phone: p.phone ?? "",
-        source: p.source ?? "",
-        birthday: p.birthday ?? "",
-        age: p.age != null ? Number(p.age) : undefined,
+      const res = (await getPatientListApi({
+        keyword: kw,
+        page: 1,
+        pageSize: 20,
+      })) as ApiResponse<PatientListData>;
+      const list: PatientSuggestion[] = (res.data?.list ?? []).map((patient) => ({
+        value: patient.name,
+        id: patient.id,
+        phone: patient.phone ?? "",
+        source: patient.source ?? "",
+        birthday: patient.birthday ?? "",
+        age: patient.age != null ? Number(patient.age) : undefined,
       }));
       cb(list);
     } catch {

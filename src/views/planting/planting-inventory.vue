@@ -113,6 +113,16 @@ interface InvRow {
   left: number;
 }
 
+interface ApiResponse<T> {
+  data: T;
+}
+
+interface PlantingLeftStock {
+  left: number;
+  supplement: number;
+  used: number;
+}
+
 const loading = ref(false);
 const list = ref<InvRow[]>([]);
 const selection = ref<InvRow[]>([]);
@@ -125,7 +135,7 @@ const leftResult = ref("");
 async function load() {
   loading.value = true;
   try {
-    const res: any = await getPlantingInventoryApi();
+    const res = (await getPlantingInventoryApi()) as ApiResponse<InvRow[]>;
     list.value = res.data || [];
   } catch {
     list.value = [];
@@ -154,7 +164,10 @@ async function addStock() {
 async function queryLeft() {
   leftResult.value = "";
   try {
-    const res: any = await queryPlantingLeftStockApi(leftForm.brand, leftForm.model);
+    const res = (await queryPlantingLeftStockApi(
+      leftForm.brand,
+      leftForm.model,
+    )) as ApiResponse<PlantingLeftStock>;
     const data = res.data;
     leftResult.value = `剩余 ${data.left}（补货 ${data.supplement}，已用 ${data.used}）`;
   } catch {

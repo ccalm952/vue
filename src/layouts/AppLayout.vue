@@ -337,6 +337,7 @@ async function handleCommand(command: string) {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #fff;
 }
 
 /* 左侧：汉堡按钮与横向菜单同一行 */

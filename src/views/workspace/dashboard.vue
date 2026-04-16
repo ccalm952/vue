@@ -271,6 +271,14 @@ interface ApptRow {
   remark: string;
 }
 
+interface ApiResponse<T> {
+  data: T;
+}
+
+interface MonthIncomeData {
+  monthIncome: number;
+}
+
 const loading = ref(false);
 const mainTab = ref("visit");
 const filterDate = ref(todayStr());
@@ -345,7 +353,7 @@ async function loadTodayData() {
     ]);
 
     if (apptRes.status === "fulfilled") {
-      const res = apptRes.value as any;
+      const res = apptRes.value as ApiResponse<ApptRow[]>;
       const list = (res?.data ?? []) as ApptRow[];
       todayAppointments.value = Array.isArray(list) ? list : [];
     } else {
@@ -353,7 +361,7 @@ async function loadTodayData() {
     }
 
     if (incomeRes.status === "fulfilled") {
-      const res = incomeRes.value as any;
+      const res = incomeRes.value as ApiResponse<MonthIncomeData>;
       const v = Number(res?.data?.monthIncome);
       performance.value.monthIncome = Number.isFinite(v) ? v : 0;
     } else {

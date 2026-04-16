@@ -37,8 +37,17 @@ import {
   getPlantingStatsMonthTotalApi,
 } from "@/api/planting";
 
+interface ApiResponse<T> {
+  data: T;
+}
+
+interface StaffStatRow {
+  name: string;
+  count: number;
+}
+
 const loading = ref(false);
-const staffRows = ref<{ name: string; count: number }[]>([]);
+const staffRows = ref<StaffStatRow[]>([]);
 const months = ref<string[]>([]);
 const month = ref("");
 const monthTotal = ref(0);
@@ -49,7 +58,7 @@ async function loadMonthTotal() {
     return;
   }
   try {
-    const res: any = await getPlantingStatsMonthTotalApi(month.value);
+    const res = (await getPlantingStatsMonthTotalApi(month.value)) as ApiResponse<number>;
     monthTotal.value = res.data ?? 0;
   } catch {
     monthTotal.value = 0;
@@ -63,8 +72,8 @@ async function loadAll() {
       getPlantingStatsStaffApi(),
       getPlantingStatsMonthsApi(),
     ]);
-    staffRows.value = (staffRes as any).data || [];
-    months.value = (monthsRes as any).data || [];
+    staffRows.value = (staffRes as ApiResponse<StaffStatRow[]>).data || [];
+    months.value = (monthsRes as ApiResponse<string[]>).data || [];
     if (!month.value && months.value.length) {
       month.value = months.value[0]!;
     }
