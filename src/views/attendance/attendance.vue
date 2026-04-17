@@ -53,7 +53,7 @@
               'is-warn': geofenceCfg.enabled && !insideFence,
             }"
           >
-            <el-icon class="attendance-location-icon" :size="16">
+            <el-icon class="attendance-location-icon" :size="14">
               <CircleCheckFilled v-if="!geofenceCfg.enabled || insideFence" />
               <WarningFilled v-else />
             </el-icon>
@@ -123,19 +123,15 @@
 
         <p class="attendance-history-overtime">{{ selectedOvertimeLine }}</p>
 
-        <div class="attendance-history-timeline">
-          <div
-            v-for="(item, idx) in selectedDayTimeline"
+        <el-timeline class="attendance-history-timeline">
+          <el-timeline-item
+            v-for="item in selectedDayTimeline"
             :key="item.key"
-            class="attendance-history-timeline-item"
+            hide-timestamp
+            type="primary"
+            :hollow="true"
+            center
           >
-            <div class="attendance-history-timeline-rail">
-              <span class="attendance-history-timeline-dot" />
-              <span
-                v-if="idx < selectedDayTimeline.length - 1"
-                class="attendance-history-timeline-line"
-              />
-            </div>
             <div class="attendance-history-timeline-body">
               <div class="attendance-history-timeline-head">
                 <span class="attendance-history-timeline-label">{{ item.label }}</span>
@@ -144,26 +140,23 @@
                   :class="{ 'is-empty': !item.time }"
                   >{{ item.time || "--:--" }}</span
                 >
+                <el-button
+                  v-if="isAdmin && item.id"
+                  class="attendance-history-timeline-delete"
+                  type="danger"
+                  link
+                  :loading="deletingRecordId === item.id"
+                  @click="confirmDeleteAttendanceRecord(item.id)"
+                >
+                  删除
+                </el-button>
               </div>
               <div v-if="item.address" class="attendance-history-timeline-addr">
-                <el-icon class="attendance-history-timeline-addr-icon" :size="14">
-                  <LocationFilled />
-                </el-icon>
-                <span>{{ item.address }}</span>
+                {{ item.address }}
               </div>
-              <el-button
-                v-if="isAdmin && item.id"
-                type="danger"
-                link
-                size="small"
-                :loading="deletingRecordId === item.id"
-                @click="confirmDeleteAttendanceRecord(item.id)"
-              >
-                删除
-              </el-button>
             </div>
-          </div>
-        </div>
+          </el-timeline-item>
+        </el-timeline>
       </template>
       <el-empty v-else description="暂无打卡记录" />
     </el-card>
@@ -853,8 +846,10 @@ onUnmounted(() => {
   gap: 16px;
 }
 
-.attendance-toolbar-btn {
+.attendance-toolbar-btn.el-button.is-link {
   padding: 8px;
+  height: auto;
+  border: none;
   margin: 0;
 }
 
@@ -879,16 +874,20 @@ onUnmounted(() => {
 }
 
 .attendance-punch-btn.el-button.is-text {
-  padding: 0;
-  flex-shrink: 0;
+  padding: 8px;
+  height: auto;
 }
 
 .attendance-date {
   font-size: 14px;
+  line-height: 1;
+  padding: 8px;
 }
 
 .attendance-time {
   font-size: 14px;
+  line-height: 1;
+  padding: 8px;
 }
 
 /* 2. 定位条（宽度随地址等文本收缩，最长不超过卡片） */
@@ -898,9 +897,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-width: min(500px, 100%);
-  width: fit-content;
-  height: 32px;
+  height: auto;
 }
 
 .attendance-location-status {
@@ -915,11 +912,13 @@ onUnmounted(() => {
 .attendance-location-status.is-ok .attendance-location-icon {
   color: var(--el-color-success);
   flex-shrink: 0;
+  padding: 8px;
 }
 
 .attendance-location-status.is-warn .attendance-location-icon {
   color: var(--el-color-warning);
   flex-shrink: 0;
+  padding: 8px;
 }
 
 .attendance-location-content {
@@ -929,6 +928,8 @@ onUnmounted(() => {
 
 .attendance-location-address {
   font-size: 14px;
+  line-height: 1;
+  padding: 8px;
 }
 
 .attendance-location-empty {
@@ -961,12 +962,13 @@ onUnmounted(() => {
   flex-wrap: wrap;
   gap: 16px;
   justify-content: center;
-  height: 32px;
+  height: auto;
 }
 
-.attendance-history-week-nav-btn {
-  padding: 8px;
+.attendance-history-week-nav-btn.el-button.is-text {
+  height: auto;
   margin: 0;
+  padding: 8px;
 }
 
 .attendance-history-strip-outer {
@@ -1036,90 +1038,74 @@ onUnmounted(() => {
 }
 
 .attendance-history-overtime {
-  color: var(--el-text-color-secondary);
-  font-size: 12px;
-  line-height: 1.5;
-  margin: 0 0 16px;
-  text-align: center;
+  line-height: 1;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 8px;
 }
 
 .attendance-history-timeline {
-  display: flex;
-  flex-direction: column;
+  margin-top: 16px;
+  padding-left: 16px;
 }
 
-.attendance-history-timeline-item {
-  display: flex;
-  gap: 12px;
+.attendance-history-timeline :deep(.el-timeline-item__wrapper) {
+  position: relative;
+  bottom: 0;
+  top: 0;
+  padding-left: 28px;
 }
 
-.attendance-history-timeline-rail {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  width: 14px;
+.attendance-history-timeline :deep(.el-timeline-item__tail) {
+  border-left-color: var(--el-border-color-lighter);
 }
 
-.attendance-history-timeline-dot {
-  background: #fff;
-  border: 2px solid var(--el-color-primary);
-  border-radius: 50%;
-  box-sizing: border-box;
-  flex-shrink: 0;
-  height: 12px;
-  width: 12px;
-}
-
-.attendance-history-timeline-line {
-  background: var(--el-border-color-lighter);
-  flex: 1;
-  min-height: 20px;
-  width: 2px;
+.attendance-history-timeline :deep(.el-timeline-item) {
+  padding-bottom: 16px;
 }
 
 .attendance-history-timeline-body {
-  flex: 1;
   min-width: 0;
-  padding-bottom: 18px;
 }
 
 .attendance-history-timeline-head {
-  align-items: baseline;
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
+  line-height: 1;
+  padding: 8px;
+}
+
+.attendance-history-timeline-delete {
+  flex-shrink: 0;
+  height: auto;
+  padding: 0;
+  border: 0;
 }
 
 .attendance-history-timeline-label {
-  color: var(--el-text-color-regular);
   font-size: 14px;
+  line-height: 1;
 }
 
 .attendance-history-timeline-time {
   font-size: 14px;
+  line-height: 1;
+}
+
+.attendance-history-timeline-addr {
+  font-size: 14px;
+  line-height: 1;
+  padding: 8px;
 }
 
 .attendance-history-timeline-time.is-empty {
   color: var(--el-text-color-placeholder);
-  font-size: 16px;
-  font-weight: 400;
-}
-
-.attendance-history-timeline-addr {
-  align-items: flex-start;
-  color: var(--el-text-color-secondary);
-  display: flex;
-  font-size: 12px;
-  gap: 4px;
-  line-height: 1.45;
-  margin-top: 6px;
-  word-break: break-all;
-}
-
-.attendance-history-timeline-addr-icon {
-  flex-shrink: 0;
-  margin-top: 2px;
+  font-size: 14px;
 }
 
 .attendance-history-empty {
