@@ -1,10 +1,10 @@
-# Vue + Nest Dental Project
+# 测试
 
 本项目在根目录放置 Vue 3 前端，在 `server/` 目录放置 NestJS 后端。
 
 ## 环境要求
 
-- Node.js `^20.19.0 || >=22.12.0`
+- Node.js `>=22.0.0`
 - pnpm `10.33.0`
 
 ## 快速开始
@@ -37,12 +37,9 @@ pnpm dev:server
 - `pnpm build`：构建前端
 - `pnpm build:server`：构建后端
 - `pnpm preview`：预览前端构建产物
-- `pnpm start:server`：启动后端构建产物
-- `pnpm type-check`：执行前端类型检查
-- `pnpm lint`：只检查，不自动修改
-- `pnpm lint:fix`：执行 lint 并自动修复可修复问题
+- `pnpm lint`：只检查不自动修复
+- `pnpm lint:fix`：检查并自动修复
 - `pnpm format`：格式化前后端源码
-- `pnpm check`：执行类型检查和 lint
 
 ## 项目结构
 
@@ -89,10 +86,8 @@ pnpm dev:server
 
 - 注释和界面文案优先使用中文
 - 文本文件统一保存为 UTF-8
-- Git 默认按 LF 管理文本换行；Windows 脚本文件单独保留 CRLF
 
 ## 说明
 
 - `src/auto-imports.d.ts` 和 `src/components.d.ts` 由 Vite 插件自动生成
 - `server/dist/` 是构建产物，不应手动编辑
-- 本地敏感配置请放在 `.env` 文件中，不要提交到版本库

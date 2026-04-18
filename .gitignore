@@ -1,29 +1,7 @@
 node_modules/
 dist/
-.DS_Store
-Thumbs.db
-
-# Logs
 *.log
 pnpm-debug.log*
-
-# Env files
-.env
-.env.local
-.env.*.local
-server/.env
-
-# TypeScript incremental files
 *.tsbuildinfo
-
-# Frontend generated files
 src/auto-imports.d.ts
 src/components.d.ts
-
-# Backend build output
-server/dist/
-server/node_modules/
-
-# IDE files
-.idea/
-.vscode/
