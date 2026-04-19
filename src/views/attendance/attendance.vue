@@ -1,10 +1,10 @@
 <template>
-  <div class="attendance">
-    <div class="attendance-toolbar">
+  <div class="attendance-page">
+    <div class="attendance-page__toolbar">
       <el-button
         link
         type="primary"
-        class="attendance-toolbar-btn"
+        class="attendance-page__toolbar-button"
         @click="router.push('/attendance/settings')"
       >
         打卡范围配置
@@ -12,7 +12,7 @@
       <el-button
         link
         type="primary"
-        class="attendance-toolbar-btn"
+        class="attendance-page__toolbar-button"
         @click="router.push('/attendance/shift-settings')"
       >
         班次时间配置
@@ -21,19 +21,19 @@
         v-if="isAdmin"
         link
         type="primary"
-        class="attendance-toolbar-btn"
+        class="attendance-page__toolbar-button"
         @click="router.push('/attendance/stats')"
       >
         考勤统计
       </el-button>
     </div>
     <!-- 打卡区 -->
-    <el-card class="attendance-card" shadow="hover">
-      <div class="attendance-clock">
-        <div class="attendance-date">{{ currentDateStr }}</div>
-        <div class="attendance-time">{{ currentTime }}</div>
+    <el-card class="attendance-page__card attendance-page__card--clock" shadow="hover">
+      <div class="attendance-page__clock">
+        <div class="attendance-page__date">{{ currentDateStr }}</div>
+        <div class="attendance-page__time">{{ currentTime }}</div>
         <el-button
-          class="attendance-punch-btn"
+          class="attendance-page__punch-button"
           text
           type="primary"
           :loading="punching"
@@ -44,39 +44,41 @@
         </el-button>
       </div>
 
-      <div class="attendance-location">
+      <div class="attendance-page__location">
         <template v-if="location.latitude">
           <div
-            class="attendance-location-status"
+            class="attendance-page__location-status"
             :class="{
-              'is-ok': !geofenceCfg.enabled || insideFence,
-              'is-warn': geofenceCfg.enabled && !insideFence,
+              'attendance-page__location-status--ok': !geofenceCfg.enabled || insideFence,
+              'attendance-page__location-status--warn': geofenceCfg.enabled && !insideFence,
             }"
           >
-            <el-icon class="attendance-location-icon" :size="14">
+            <el-icon class="attendance-page__location-icon" :size="14">
               <CircleCheckFilled v-if="!geofenceCfg.enabled || insideFence" />
               <WarningFilled v-else />
             </el-icon>
-            <div class="attendance-location-content">
-              <div class="attendance-location-address">{{ location.address || "未知地址" }}</div>
+            <div class="attendance-page__location-content">
+              <div class="attendance-page__location-address">
+                {{ location.address || "未知地址" }}
+              </div>
             </div>
           </div>
         </template>
-        <div v-else class="attendance-location-empty">
+        <div v-else class="attendance-page__location-empty">
           <el-button type="primary" plain round :loading="locating" @click="refreshLocation">
             <el-icon><LocationFilled /></el-icon>
             {{ locating ? "正在获取位置..." : "获取定位" }}
           </el-button>
-          <p class="attendance-location-hint">打卡前请先获取定位</p>
+          <p class="attendance-page__location-hint">打卡前请先获取定位</p>
         </div>
       </div>
     </el-card>
     <!-- 历史记录 -->
-    <el-card class="attendance-history" shadow="never">
+    <el-card class="attendance-page__card attendance-page__card--history" shadow="never">
       <template v-if="historyRows.length">
-        <div class="attendance-history-week-nav">
+        <div class="attendance-page__history-nav">
           <el-button
-            class="attendance-history-week-nav-btn"
+            class="attendance-page__history-nav-button"
             text
             type="primary"
             @click="shiftHistoryStripWeek(-1)"
@@ -84,7 +86,7 @@
             上一周
           </el-button>
           <el-button
-            class="attendance-history-week-nav-btn"
+            class="attendance-page__history-nav-button"
             text
             type="primary"
             @click="shiftHistoryStripWeek(1)"
@@ -92,7 +94,7 @@
             下一周
           </el-button>
           <el-button
-            class="attendance-history-week-nav-btn"
+            class="attendance-page__history-nav-button"
             text
             type="primary"
             @click="goToCurrentWeek"
@@ -100,30 +102,36 @@
             回到本周
           </el-button>
         </div>
-        <div class="attendance-history-strip-outer" role="group" aria-label="选择日期">
-          <div class="attendance-history-strip">
+        <div class="attendance-page__history-strip-outer" role="group" aria-label="选择日期">
+          <div class="attendance-page__history-strip">
             <button
               v-for="d in historyStripDates"
               :key="d.key"
               type="button"
-              class="attendance-history-strip-day"
+              class="attendance-page__history-day"
               :class="{
-                'is-selected': d.key === historySelectedDate,
-                'is-today': d.isToday,
-                'has-record': d.hasRecord,
+                'attendance-page__history-day--selected': d.key === historySelectedDate,
+                'attendance-page__history-day--today': d.isToday,
+                'attendance-page__history-day--has-record': d.hasRecord,
               }"
               @click="historySelectedDate = d.key"
             >
-              <span class="attendance-history-strip-dow">{{ d.dow }}</span>
-              <span class="attendance-history-strip-num">{{ d.dayNum }}</span>
-              <span v-if="d.hasRecord" class="attendance-history-strip-dot" aria-hidden="true" />
+              <span class="attendance-page__history-day-dow">{{ d.dow }}</span>
+              <span class="attendance-page__history-day-number">{{ d.dayNum }}</span>
+              <span
+                v-if="d.hasRecord"
+                class="attendance-page__history-day-dot"
+                aria-hidden="true"
+              >
+                <el-icon :size="14"><Clock /></el-icon>
+              </span>
             </button>
           </div>
         </div>
 
-        <p class="attendance-history-overtime">{{ selectedOvertimeLine }}</p>
+        <p class="attendance-page__history-overtime">{{ selectedOvertimeLine }}</p>
 
-        <el-timeline class="attendance-history-timeline">
+        <el-timeline class="attendance-page__history-timeline">
           <el-timeline-item
             v-for="item in selectedDayTimeline"
             :key="item.key"
@@ -132,17 +140,17 @@
             :hollow="true"
             center
           >
-            <div class="attendance-history-timeline-body">
-              <div class="attendance-history-timeline-head">
-                <span class="attendance-history-timeline-label">{{ item.label }}</span>
+            <div class="attendance-page__history-timeline-body">
+              <div class="attendance-page__history-timeline-head">
+                <span class="attendance-page__history-timeline-label">{{ item.label }}</span>
                 <span
-                  class="attendance-history-timeline-time"
-                  :class="{ 'is-empty': !item.time }"
+                  class="attendance-page__history-timeline-time"
+                  :class="{ 'attendance-page__history-timeline-time--empty': !item.time }"
                   >{{ item.time || "--:--" }}</span
                 >
                 <el-button
                   v-if="isAdmin && item.id"
-                  class="attendance-history-timeline-delete"
+                  class="attendance-page__history-timeline-delete"
                   type="danger"
                   link
                   :loading="deletingRecordId === item.id"
@@ -151,7 +159,7 @@
                   删除
                 </el-button>
               </div>
-              <div v-if="item.address" class="attendance-history-timeline-addr">
+              <div v-if="item.address" class="attendance-page__history-timeline-address">
                 {{ item.address }}
               </div>
             </div>
@@ -166,7 +174,12 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
-import { LocationFilled, CircleCheckFilled, WarningFilled } from "@element-plus/icons-vue";
+import {
+  LocationFilled,
+  CircleCheckFilled,
+  WarningFilled,
+  Clock,
+} from "@element-plus/icons-vue";
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "@/stores/auth-store";
 import { useAttendanceShiftStore } from "@/stores/attendance-shift-store";
@@ -644,7 +657,7 @@ const historyStripDates = computed(() => {
     );
     out.push({
       key,
-      dow: "周" + dowZh[d.getDay()],
+      dow: dowZh[d.getDay()] ?? "",
       dayNum: d.getDate(),
       hasRecord,
       isToday: key === todayKey,
@@ -832,21 +845,22 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.attendance {
+.attendance-page {
   padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  margin: auto;
 }
 
 /* ── 工具栏 ── */
-.attendance-toolbar {
+.attendance-page__toolbar {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-.attendance-toolbar-btn.el-button.is-link {
+.attendance-page__toolbar-button.el-button.is-link {
   padding: 8px;
   height: auto;
   border: none;
@@ -856,7 +870,7 @@ onUnmounted(() => {
 /* ═══ 打卡主卡片（顺序：卡片容器 → 时钟 → 定位条）═══ */
 
 /* 卡片容器 */
-.attendance-card :deep(.el-card__body) {
+.attendance-page__card--clock :deep(.el-card__body) {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -865,7 +879,7 @@ onUnmounted(() => {
 }
 
 /* 1. 时钟（日期、时间，右侧「打卡」） */
-.attendance-clock {
+.attendance-page__clock {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -873,25 +887,25 @@ onUnmounted(() => {
   gap: 16px;
 }
 
-.attendance-punch-btn.el-button.is-text {
+.attendance-page__punch-button.el-button.is-text {
   padding: 8px;
   height: auto;
 }
 
-.attendance-date {
+.attendance-page__date {
   font-size: 14px;
   line-height: 1;
   padding: 8px;
 }
 
-.attendance-time {
+.attendance-page__time {
   font-size: 14px;
   line-height: 1;
   padding: 8px;
 }
 
 /* 2. 定位条（宽度随地址等文本收缩，最长不超过卡片） */
-.attendance-location {
+.attendance-page__location {
   align-items: center;
   justify-content: center;
   display: flex;
@@ -900,7 +914,7 @@ onUnmounted(() => {
   height: auto;
 }
 
-.attendance-location-status {
+.attendance-page__location-status {
   display: flex;
   gap: 16px;
   align-items: center;
@@ -909,30 +923,30 @@ onUnmounted(() => {
   max-width: 100%;
 }
 
-.attendance-location-status.is-ok .attendance-location-icon {
+.attendance-page__location-status--ok .attendance-page__location-icon {
   color: var(--el-color-success);
   flex-shrink: 0;
   padding: 8px;
 }
 
-.attendance-location-status.is-warn .attendance-location-icon {
+.attendance-page__location-status--warn .attendance-page__location-icon {
   color: var(--el-color-warning);
   flex-shrink: 0;
   padding: 8px;
 }
 
-.attendance-location-content {
+.attendance-page__location-content {
   flex: 0 1 auto;
   min-width: 0;
 }
 
-.attendance-location-address {
+.attendance-page__location-address {
   font-size: 14px;
   line-height: 1;
   padding: 8px;
 }
 
-.attendance-location-empty {
+.attendance-page__location-empty {
   align-items: center;
   display: flex;
   flex-direction: column;
@@ -941,7 +955,7 @@ onUnmounted(() => {
   text-align: center;
 }
 
-.attendance-location-hint {
+.attendance-page__location-hint {
   color: var(--el-text-color-secondary);
   font-size: 14px;
   line-height: 1.4;
@@ -949,14 +963,14 @@ onUnmounted(() => {
 }
 
 /* ═══ 历史记录 ═══ */
-.attendance-history :deep(.el-card__body) {
+.attendance-page__card--history :deep(.el-card__body) {
   padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.attendance-history-week-nav {
+.attendance-page__history-nav {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
@@ -965,79 +979,72 @@ onUnmounted(() => {
   height: auto;
 }
 
-.attendance-history-week-nav-btn.el-button.is-text {
+.attendance-page__history-nav-button.el-button.is-text {
   height: auto;
   margin: 0;
   padding: 8px;
 }
 
-.attendance-history-strip-outer {
+.attendance-page__history-strip-outer {
   margin: 0 0 8px;
   overflow: hidden;
 }
 
-.attendance-history-strip {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 2px;
-  padding: 4px 0 10px;
+.attendance-page__history-strip {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 16px;
+  justify-content: center;
 }
 
-.attendance-history-strip-day {
+.attendance-page__history-day {
   align-items: center;
+  -webkit-tap-highlight-color: transparent;
   background: transparent;
   border: none;
-  border-radius: 10px;
-  color: var(--el-text-color-regular);
   cursor: pointer;
   display: flex;
   flex-direction: column;
   font: inherit;
-  gap: 6px;
-  min-width: 0;
-  padding: 6px 2px 8px;
+  gap: 8px;
+  padding: 0;
+  color: var(--el-text-color-regular);
 }
 
-.attendance-history-strip-day:hover {
-  background: var(--el-fill-color-light);
+.attendance-page__history-day-dow {
+  font-size: 14px;
+  line-height: 1;
+  padding: 8px;
+  white-space: nowrap;
 }
 
-.attendance-history-strip-dow {
-  font-size: 12px;
-  line-height: 1.2;
-}
-
-.attendance-history-strip-num {
+.attendance-page__history-day-number {
   align-items: center;
-  border-radius: 50%;
   display: flex;
-  font-size: 15px;
-  font-weight: 600;
-  height: 36px;
+  font-size: 14px;
   justify-content: center;
   line-height: 1;
-  width: 36px;
+  padding: 8px;
+  border-radius: 50%;
+  height: 18px;
+  width: 18px;
 }
 
-.attendance-history-strip-day.is-selected .attendance-history-strip-num {
+.attendance-page__history-day--selected .attendance-page__history-day-number {
   background: var(--el-color-primary);
   color: #fff;
 }
 
-.attendance-history-strip-day.is-today:not(.is-selected) .attendance-history-strip-num {
-  outline: 1px solid var(--el-color-primary-light-5);
-}
-
-.attendance-history-strip-dot {
-  background: var(--el-color-warning);
-  border-radius: 50%;
+.attendance-page__history-day-dot {
+  align-items: center;
+  color: var(--el-color-warning);
+  display: flex;
   flex-shrink: 0;
-  height: 5px;
-  margin-top: -2px;
-  width: 5px;
+  justify-content: center;
+  padding: 8px;
 }
 
-.attendance-history-overtime {
+.attendance-page__history-overtime {
   line-height: 1;
   font-size: 14px;
   display: flex;
@@ -1047,31 +1054,31 @@ onUnmounted(() => {
   padding: 8px;
 }
 
-.attendance-history-timeline {
+.attendance-page__history-timeline {
   margin-top: 16px;
   padding-left: 16px;
 }
 
-.attendance-history-timeline :deep(.el-timeline-item__wrapper) {
+.attendance-page__history-timeline :deep(.el-timeline-item__wrapper) {
   position: relative;
   bottom: 0;
   top: 0;
   padding-left: 28px;
 }
 
-.attendance-history-timeline :deep(.el-timeline-item__tail) {
+.attendance-page__history-timeline :deep(.el-timeline-item__tail) {
   border-left-color: var(--el-border-color-lighter);
 }
 
-.attendance-history-timeline :deep(.el-timeline-item) {
+.attendance-page__history-timeline :deep(.el-timeline-item) {
   padding-bottom: 16px;
 }
 
-.attendance-history-timeline-body {
+.attendance-page__history-timeline-body {
   min-width: 0;
 }
 
-.attendance-history-timeline-head {
+.attendance-page__history-timeline-head {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
@@ -1080,39 +1087,32 @@ onUnmounted(() => {
   padding: 8px;
 }
 
-.attendance-history-timeline-delete {
+.attendance-page__history-timeline-delete {
   flex-shrink: 0;
   height: auto;
   padding: 0;
   border: 0;
 }
 
-.attendance-history-timeline-label {
+.attendance-page__history-timeline-label {
   font-size: 14px;
   line-height: 1;
 }
 
-.attendance-history-timeline-time {
+.attendance-page__history-timeline-time {
   font-size: 14px;
   line-height: 1;
 }
 
-.attendance-history-timeline-addr {
+.attendance-page__history-timeline-address {
   font-size: 14px;
   line-height: 1;
   padding: 8px;
 }
 
-.attendance-history-timeline-time.is-empty {
+.attendance-page__history-timeline-time--empty {
   color: var(--el-text-color-placeholder);
   font-size: 14px;
 }
 
-.attendance-history-empty {
-  color: var(--el-text-color-placeholder);
-}
-
-/* ── 响应式（打卡区相关在前，与上方结构顺序一致）── */
-@media (max-width: 640px) {
-}
 </style>

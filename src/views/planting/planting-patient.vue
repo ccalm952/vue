@@ -1,6 +1,6 @@
 <template>
   <div class="planting-patient-page">
-    <el-card class="filter-section">
+    <el-card class="planting-patient-page__filter-card">
       <div>筛选</div>
       <el-form inline>
         <el-form-item>
@@ -20,9 +20,9 @@
       </el-form>
     </el-card>
 
-    <el-card shadow="never" class="table-card">
-      <div class="table-header">
-        <div class="table-title">
+    <el-card shadow="never" class="planting-patient-page__table-card">
+      <div class="planting-patient-page__table-header">
+        <div class="planting-patient-page__table-title">
           <span>种植患者</span>
           <el-tag type="info" size="small" effect="plain">共 {{ patients.length }} 人</el-tag>
         </div>
@@ -111,18 +111,18 @@ onMounted(fetchList);
   gap: 16px;
 }
 
-.table-card {
+.planting-patient-page__table-card {
   border-radius: 8px;
 }
 
-.table-header {
+.planting-patient-page__table-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
 }
 
-.table-title {
+.planting-patient-page__table-title {
   display: flex;
   align-items: center;
   gap: 10px;

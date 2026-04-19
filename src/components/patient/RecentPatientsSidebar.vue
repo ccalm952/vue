@@ -1,9 +1,9 @@
 <template>
   <div class="patient-sidebar">
-    <div class="sidebar-tabs">
+    <div class="patient-sidebar__tabs">
       <button
         type="button"
-        class="sidebar-tab"
+        class="patient-sidebar__tab"
         :class="{ active: sidebarTab === 'group' }"
         @click="onClickGroupTab"
       >
@@ -11,7 +11,7 @@
       </button>
       <button
         type="button"
-        class="sidebar-tab"
+        class="patient-sidebar__tab"
         :class="{ active: sidebarTab === 'recent' }"
         @click="onClickRecentTab"
       >
@@ -20,65 +20,65 @@
     </div>
 
     <!-- 分组 -->
-    <div v-show="sidebarTab === 'group'" class="tab-panel tab-panel-group">
+    <div v-show="sidebarTab === 'group'" class="patient-sidebar__panel patient-sidebar__panel--group">
       <div
-        class="group-row group-row-top"
+        class="patient-sidebar__group-row patient-sidebar__group-row--top"
         :class="{ active: isScopeActive('all') }"
         @click="goPatientList('all')"
       >
-        <el-icon class="group-icon group-icon--primary"><UserFilled /></el-icon>
-        <span class="group-label">全部患者</span>
-        <span class="group-count">({{ fmtCount(counts.total) }})</span>
+        <el-icon class="patient-sidebar__group-icon patient-sidebar__group-icon--primary"><UserFilled /></el-icon>
+        <span class="patient-sidebar__group-label">全部患者</span>
+        <span class="patient-sidebar__group-count">({{ fmtCount(counts.total) }})</span>
       </div>
       <div
-        class="group-row group-row-top"
+        class="patient-sidebar__group-row patient-sidebar__group-row--top"
         :class="{ active: isScopeActive('mine') }"
         @click="goPatientList('mine')"
       >
-        <el-icon class="group-icon group-icon--muted"><User /></el-icon>
-        <span class="group-label">我的患者</span>
-        <span class="group-count">({{ fmtCount(counts.myPatients) }})</span>
+        <el-icon class="patient-sidebar__group-icon patient-sidebar__group-icon--muted"><User /></el-icon>
+        <span class="patient-sidebar__group-label">我的患者</span>
+        <span class="patient-sidebar__group-count">({{ fmtCount(counts.myPatients) }})</span>
       </div>
 
       <!-- 自动分组：保存患者查询条件，患者列表数量随条件变化而变化 -->
-      <div class="group-section">
-        <div class="section-head" @click="autoOpen = !autoOpen">
-          <span class="section-accent" />
-          <span class="section-title">自动分组</span>
-          <span class="section-head-actions" @click.stop>
+      <div class="patient-sidebar__section">
+        <div class="patient-sidebar__section-head" @click="autoOpen = !autoOpen">
+          <span class="patient-sidebar__section-accent" />
+          <span class="patient-sidebar__section-title">自动分组</span>
+          <span class="patient-sidebar__section-head-actions" @click.stop>
             <el-tooltip
               content="自动分组：保存患者查询条件，患者列表数量随条件变化而变化"
               placement="top"
             >
-              <el-icon class="section-action-icon"><InfoFilled /></el-icon>
+              <el-icon class="patient-sidebar__section-action-icon"><InfoFilled /></el-icon>
             </el-tooltip>
             <el-tooltip content="添加规则分组（敬请期待）" placement="top">
-              <el-icon class="section-action-icon" @click.stop="onAddAutoGroupClick"
+              <el-icon class="patient-sidebar__section-action-icon" @click.stop="onAddAutoGroupClick"
                 ><CirclePlus
               /></el-icon>
             </el-tooltip>
-            <el-icon class="section-chevron">
+            <el-icon class="patient-sidebar__section-chevron">
               <ArrowUp v-if="autoOpen" />
               <ArrowDown v-else />
             </el-icon>
           </span>
         </div>
-        <div v-show="autoOpen" class="section-body">
+        <div v-show="autoOpen" class="patient-sidebar__section-body">
           <div
-            class="group-row group-row-sub"
+            class="patient-sidebar__group-row patient-sidebar__group-row--sub"
             :class="{ active: isScopeActive('notVisitedYear') }"
             @click="goPatientList('notVisitedYear')"
           >
-            <el-icon class="group-icon group-icon--sub"><User /></el-icon>
-            <span class="group-label group-label-ellipsis">一年以上未到店患者</span>
-            <span class="group-count">({{ fmtCount(counts.auto.notVisitedOverYear) }})</span>
+            <el-icon class="patient-sidebar__group-icon patient-sidebar__group-icon--sub"><User /></el-icon>
+            <span class="patient-sidebar__group-label patient-sidebar__group-label--ellipsis">一年以上未到店患者</span>
+            <span class="patient-sidebar__group-count">({{ fmtCount(counts.auto.notVisitedOverYear) }})</span>
             <el-dropdown
-              class="group-row-dropdown"
+              class="patient-sidebar__group-dropdown"
               trigger="click"
               @command="onAutoSubGroupCommand"
               @click.stop
             >
-              <span class="group-row-more" @click.stop>
+              <span class="patient-sidebar__group-more" @click.stop>
                 <el-icon :size="16"><MoreFilled /></el-icon>
               </span>
               <template #dropdown>
@@ -93,49 +93,49 @@
       </div>
 
       <!-- 手动分组：保存患者查询结果，患者列表支持批量操作增减患者 -->
-      <div class="group-section group-section-manual">
-        <div class="section-head section-head-muted" @click="manualOpen = !manualOpen">
-          <span class="section-accent" />
-          <span class="section-title">手动分组</span>
-          <span class="section-head-actions" @click.stop>
+      <div class="patient-sidebar__section patient-sidebar__section--manual">
+        <div class="patient-sidebar__section-head patient-sidebar__section-head--muted" @click="manualOpen = !manualOpen">
+          <span class="patient-sidebar__section-accent" />
+          <span class="patient-sidebar__section-title">手动分组</span>
+          <span class="patient-sidebar__section-head-actions" @click.stop>
             <el-tooltip
               content="手动分组：保存患者查询结果，患者列表支持批量操作增减患者"
               placement="top"
             >
-              <el-icon class="section-action-icon"><InfoFilled /></el-icon>
+              <el-icon class="patient-sidebar__section-action-icon"><InfoFilled /></el-icon>
             </el-tooltip>
             <el-tooltip content="新增自定义分组" placement="top">
-              <el-icon class="section-action-icon" @click.stop="openManualGroupDialog('add')"
+              <el-icon class="patient-sidebar__section-action-icon" @click.stop="openManualGroupDialog('add')"
                 ><CirclePlus
               /></el-icon>
             </el-tooltip>
-            <el-icon class="section-chevron">
+            <el-icon class="patient-sidebar__section-chevron">
               <ArrowUp v-if="manualOpen" />
               <ArrowDown v-else />
             </el-icon>
           </span>
         </div>
-        <div v-show="manualOpen" class="section-body">
-          <div v-if="!manualLabels.length" class="manual-group-empty">
+        <div v-show="manualOpen" class="patient-sidebar__section-body">
+          <div v-if="!manualLabels.length" class="patient-sidebar__manual-group-empty">
             暂无分组，点击右上角 + 新增
           </div>
           <div
             v-for="label in manualLabels"
             :key="label"
-            class="group-row group-row-sub"
+            class="patient-sidebar__group-row patient-sidebar__group-row--sub"
             :class="{ active: isManualKeywordActive(label) }"
             @click="goManualGroup(label)"
           >
-            <el-icon class="group-icon group-icon--sub"><User /></el-icon>
-            <span class="group-label group-label-ellipsis">{{ label }}</span>
-            <span class="group-row-manual-spacer" />
+            <el-icon class="patient-sidebar__group-icon patient-sidebar__group-icon--sub"><User /></el-icon>
+            <span class="patient-sidebar__group-label patient-sidebar__group-label--ellipsis">{{ label }}</span>
+            <span class="patient-sidebar__group-manual-spacer" />
             <el-dropdown
-              class="group-row-dropdown"
+              class="patient-sidebar__group-dropdown"
               trigger="click"
               @command="handleManualDropdownCommand(label)"
               @click.stop
             >
-              <span class="group-row-more" @click.stop>
+              <span class="patient-sidebar__group-more" @click.stop>
                 <el-icon :size="16"><MoreFilled /></el-icon>
               </span>
               <template #dropdown>
@@ -151,19 +151,19 @@
     </div>
 
     <!-- 最近 -->
-    <div v-show="sidebarTab === 'recent'" class="tab-panel tab-panel-recent">
-      <div v-if="recentPatients.length" class="recent-list">
+    <div v-show="sidebarTab === 'recent'" class="patient-sidebar__panel patient-sidebar__panel--recent">
+      <div v-if="recentPatients.length" class="patient-sidebar__recent-list">
         <div
           v-for="rp in recentPatients"
           :key="rp.id"
-          class="recent-item"
+          class="patient-sidebar__recent-item"
           :class="{ active: activeId != null && rp.id === activeId }"
           @click="goPatient(rp.id)"
         >
-          <el-avatar :size="32" class="recent-avatar">
+          <el-avatar :size="32" class="patient-sidebar__recent-avatar">
             {{ (rp.name || "?").charAt(0) }}
           </el-avatar>
-          <span class="recent-name">{{ rp.name || "—" }}</span>
+          <span class="patient-sidebar__recent-name">{{ rp.name || "—" }}</span>
         </div>
       </div>
       <el-empty v-else :image-size="60" description="暂无最近患者" />
@@ -537,13 +537,13 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
-.sidebar-tabs {
+.patient-sidebar__tabs {
   display: flex;
   border-bottom: 1px solid #f0f0f0;
   flex-shrink: 0;
 }
 
-.sidebar-tab {
+.patient-sidebar__tab {
   flex: 1;
   padding: 12px 8px 10px;
   border: none;
@@ -556,16 +556,16 @@ onUnmounted(() => {
   transition: color 0.2s;
 }
 
-.sidebar-tab:hover {
+.patient-sidebar__tab:hover {
   color: #303133;
 }
 
-.sidebar-tab.active {
+.patient-sidebar__tab.active {
   color: #13c2c2;
   font-weight: 600;
 }
 
-.sidebar-tab.active::after {
+.patient-sidebar__tab.active::after {
   content: "";
   position: absolute;
   left: 12px;
@@ -576,19 +576,19 @@ onUnmounted(() => {
   background: linear-gradient(90deg, #36cfc9, #1890ff);
 }
 
-.tab-panel {
+.patient-sidebar__panel {
   padding: 8px 0 12px;
   overflow-y: auto;
   flex: 1;
   min-height: 0;
 }
 
-.tab-panel-group {
+.patient-sidebar__panel--group {
   padding-left: 0;
   padding-right: 0;
 }
 
-.group-row {
+.patient-sidebar__group-row {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -599,68 +599,68 @@ onUnmounted(() => {
   transition: background 0.15s;
 }
 
-.group-row:hover {
+.patient-sidebar__group-row:hover {
   background: #fafafa;
 }
 
-.group-row.active {
+.patient-sidebar__group-row.active {
   background: #e6f7ff;
 }
 
-.group-row-top {
+.patient-sidebar__group-row--top {
   border-bottom: 1px solid #f5f5f5;
 }
 
-.group-row-sub {
+.patient-sidebar__group-row--sub {
   padding-left: 20px;
 }
 
-.group-icon {
+.patient-sidebar__group-icon {
   flex-shrink: 0;
   font-size: 16px;
 }
 
-.group-icon--primary {
+.patient-sidebar__group-icon--primary {
   color: #1890ff;
 }
 
-.group-icon--muted {
+.patient-sidebar__group-icon--muted {
   color: #595959;
 }
 
-.group-icon--sub {
+.patient-sidebar__group-icon--sub {
   color: #bfbfbf;
   font-size: 15px;
 }
 
-.group-label {
+.patient-sidebar__group-label {
   flex: 1;
   min-width: 0;
 }
 
-.group-label-ellipsis {
+.patient-sidebar__group-label--ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.group-count {
+.patient-sidebar__group-count {
   flex-shrink: 0;
   color: #8c8c8c;
   font-variant-numeric: tabular-nums;
 }
 
-.group-row-manual-spacer {
+.patient-sidebar__group-manual-spacer {
   flex: 1;
   min-width: 0;
 }
 
-.group-row-dropdown {
+.patient-sidebar__group-dropdown {
   flex-shrink: 0;
   line-height: 1;
 }
 
-.group-row-more {
+.patient-sidebar__group-more {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -671,25 +671,25 @@ onUnmounted(() => {
   opacity: 0.75;
 }
 
-.group-row-more:hover {
+.patient-sidebar__group-more:hover {
   color: #1890ff;
   background: rgba(24, 144, 255, 0.08);
   opacity: 1;
 }
 
-.group-row-sub:hover .group-row-more {
+.patient-sidebar__group-row--sub:hover .patient-sidebar__group-more {
   opacity: 1;
 }
 
-.group-section {
+.patient-sidebar__section {
   border-bottom: 1px solid #f0f0f0;
 }
 
-.group-section-manual .section-head-muted {
+.patient-sidebar__section--manual .patient-sidebar__section-head--muted {
   background: #fafafa;
 }
 
-.section-head {
+.patient-sidebar__section-head {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -698,7 +698,7 @@ onUnmounted(() => {
   user-select: none;
 }
 
-.section-accent {
+.patient-sidebar__section-accent {
   width: 3px;
   align-self: stretch;
   min-height: 18px;
@@ -707,56 +707,56 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
-.section-title {
+.patient-sidebar__section-title {
   font-size: 13px;
   font-weight: 600;
   color: #303133;
 }
 
-.section-head-actions {
+.patient-sidebar__section-head-actions {
   margin-left: auto;
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
-.section-action-icon {
+.patient-sidebar__section-action-icon {
   font-size: 15px;
   color: #8c8c8c;
   cursor: pointer;
 }
 
-.section-action-icon:hover {
+.patient-sidebar__section-action-icon:hover {
   color: #1890ff;
 }
 
-.section-chevron {
+.patient-sidebar__section-chevron {
   font-size: 12px;
   color: #bfbfbf;
 }
 
-.section-body {
+.patient-sidebar__section-body {
   padding-bottom: 4px;
 }
 
-.manual-group-empty {
+.patient-sidebar__manual-group-empty {
   padding: 10px 20px 14px;
   font-size: 12px;
   color: #909399;
   line-height: 1.5;
 }
 
-.tab-panel-recent {
+.patient-sidebar__panel--recent {
   padding: 8px 12px 12px;
 }
 
-.recent-list {
+.patient-sidebar__recent-list {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.recent-item {
+.patient-sidebar__recent-item {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -766,21 +766,21 @@ onUnmounted(() => {
   transition: background 0.2s;
 }
 
-.recent-item:hover {
+.patient-sidebar__recent-item:hover {
   background: #f5f7fa;
 }
 
-.recent-item.active {
+.patient-sidebar__recent-item.active {
   background: #ecf5ff;
 }
 
-.recent-avatar {
+.patient-sidebar__recent-avatar {
   background: linear-gradient(135deg, #667eea, #764ba2);
   font-weight: 600;
   flex-shrink: 0;
 }
 
-.recent-name {
+.patient-sidebar__recent-name {
   font-size: var(--el-font-size-small);
   color: #303133;
   white-space: nowrap;

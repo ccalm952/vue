@@ -1,6 +1,6 @@
 <template>
-  <div class="shift-settings-page">
-    <div class="settings-toolbar">
+  <div class="attendance-shift-settings-page">
+    <div class="attendance-shift-settings-page__toolbar">
       <el-button text bg type="primary" @click="router.push('/attendance')">
         <el-icon><ArrowLeft /></el-icon> 返回考勤打卡
       </el-button>
@@ -8,18 +8,27 @@
 
     <el-card shadow="hover">
       <template #header>
-        <span class="card-title">
+        <span class="attendance-shift-settings-page__card-title">
           <el-icon><Clock /></el-icon> 班次与时间规则
         </span>
       </template>
 
-      <el-alert type="info" :closable="false" show-icon class="shift-tip">
+      <el-alert
+        type="info"
+        :closable="false"
+        show-icon
+        class="attendance-shift-settings-page__tip"
+      >
         配置保存在本机浏览器（localStorage），用于考勤页展示、大按钮推荐顺序与加班统计。
         更换设备或清除站点数据后需重新配置。
       </el-alert>
 
-      <el-form label-position="top" class="shift-form" @submit.prevent>
-        <div class="shift-section-title">上午班次</div>
+      <el-form
+        label-position="top"
+        class="attendance-shift-settings-page__form"
+        @submit.prevent
+      >
+        <div class="attendance-shift-settings-page__section-title">上午班次</div>
         <el-row :gutter="16">
           <el-col :xs="24" :sm="8">
             <el-form-item label="标签">
@@ -51,14 +60,14 @@
           <el-col :xs="24" :sm="8">
             <el-form-item label="上午下班最晚可打 (HH:mm)">
               <el-input v-model="form.morningOutLatest" placeholder="14:30" />
-              <div class="field-hint">
+              <div class="attendance-shift-settings-page__field-hint">
                 含该分钟内仍可打/改上午下班；未打上午上班则不可打上午下班；未打下午上班则不可打下午下班。
               </div>
             </el-form-item>
           </el-col>
         </el-row>
 
-        <div class="shift-section-title">下午班次</div>
+        <div class="attendance-shift-settings-page__section-title">下午班次</div>
         <el-row :gutter="16">
           <el-col :xs="24" :sm="8">
             <el-form-item label="标签">
@@ -80,21 +89,23 @@
           <el-col :xs="24" :sm="12">
             <el-form-item label="下午上班最早可打 (HH:mm)">
               <el-input v-model="form.afternoonClockInEarliest" placeholder="14:30" />
-              <div class="field-hint">
+              <div class="attendance-shift-settings-page__field-hint">
                 当日时钟早于此时间不能打「下午上班」；可先补「上午上班/下班」，已打上午下班时大按钮会引导更新上午下班，直到此时之后才可打下午上班。
               </div>
             </el-form-item>
           </el-col>
         </el-row>
 
-        <div class="shift-section-title">推荐顺序与加班</div>
+        <div class="attendance-shift-settings-page__section-title">推荐顺序与加班</div>
         <el-row :gutter="16">
           <el-col :xs="24" :sm="8">
             <el-form-item label="上午优先推荐截止">
               <el-input v-model="form.morningFirstOrderUntil" placeholder="13:00">
                 <template #append>前</template>
               </el-input>
-              <div class="field-hint">早于此时大按钮按上午链→下午链；晚于等于则下午链优先</div>
+              <div class="attendance-shift-settings-page__field-hint">
+                早于此时大按钮按上午链→下午链；晚于等于则下午链优先
+              </div>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="8">
@@ -109,7 +120,7 @@
           </el-col>
         </el-row>
 
-        <div class="shift-actions">
+        <div class="attendance-shift-settings-page__actions">
           <el-button type="primary" :loading="saving" @click="handleSave">保存</el-button>
           <el-button @click="handleReset">恢复默认</el-button>
         </div>
@@ -233,18 +244,18 @@ async function handleReset() {
 </script>
 
 <style scoped>
-.shift-settings-page {
+.attendance-shift-settings-page {
   padding: 20px;
   max-width: 900px;
   margin: 0 auto;
   box-sizing: border-box;
 }
 
-.settings-toolbar {
+.attendance-shift-settings-page__toolbar {
   margin-bottom: 16px;
 }
 
-.card-title {
+.attendance-shift-settings-page__card-title {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -252,36 +263,36 @@ async function handleReset() {
   font-size: 15px;
 }
 
-.shift-tip {
+.attendance-shift-settings-page__tip {
   margin-bottom: 20px;
 }
 
-.shift-section-title {
+.attendance-shift-settings-page__section-title {
   font-size: var(--el-font-size-small);
   font-weight: 600;
   color: var(--el-text-color-secondary);
   margin: 8px 0 4px;
 }
 
-.shift-form :deep(.el-form-item) {
+.attendance-shift-settings-page__form :deep(.el-form-item) {
   margin-bottom: 12px;
 }
 
-.field-hint {
+.attendance-shift-settings-page__field-hint {
   font-size: var(--el-font-size-extra-small);
   color: var(--el-text-color-secondary);
   line-height: 1.4;
   margin-top: 4px;
 }
 
-.shift-actions {
+.attendance-shift-settings-page__actions {
   margin-top: 16px;
   display: flex;
   gap: 12px;
 }
 
 @media (max-width: 640px) {
-  .shift-settings-page {
+  .attendance-shift-settings-page {
     padding: 12px;
   }
 }

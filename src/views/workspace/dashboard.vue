@@ -1,18 +1,18 @@
 <template>
-  <div class="workbench-page scrollbar-hide">
+  <div class="dashboard-page scrollbar-hide">
     <!-- 顶部：今日患者 / 今日任务 / 技加工 -->
-    <el-row :gutter="16" class="summary-row">
+    <el-row :gutter="16" class="dashboard-page__summary-row">
       <el-col :xs="24" :sm="8">
-        <el-card shadow="never" class="summary-card">
-          <div class="summary-card-head">
-            <div class="summary-card-title">今日患者</div>
+        <el-card shadow="never" class="dashboard-page__summary-card">
+          <div class="dashboard-page__summary-card-head">
+            <div class="dashboard-page__summary-card-title">今日患者</div>
           </div>
-          <div class="summary-sub">
-            <div class="sub-line">
+          <div class="dashboard-page__summary-sub">
+            <div class="dashboard-page__sub-line">
               <span>待就诊</span>
               <el-tag size="small" type="info">{{ summary.pendingVisit }}</el-tag>
             </div>
-            <div class="sub-line">
+            <div class="dashboard-page__sub-line">
               <span>待治疗完成</span>
               <el-tag size="small" type="info">{{ summary.pendingTreatment }}</el-tag>
             </div>
@@ -20,24 +20,24 @@
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="8">
-        <el-card shadow="never" class="summary-card">
-          <div class="summary-card-head">
-            <div class="summary-card-title">今日任务</div>
+        <el-card shadow="never" class="dashboard-page__summary-card">
+          <div class="dashboard-page__summary-card-head">
+            <div class="dashboard-page__summary-card-title">今日任务</div>
           </div>
-          <div class="summary-sub">
-            <div class="sub-line">
+          <div class="dashboard-page__summary-sub">
+            <div class="dashboard-page__sub-line">
               <span>待写病历</span>
               <el-tag size="small" type="warning">{{ tasks.pendingRecord }}</el-tag>
             </div>
-            <div class="sub-line">
+            <div class="dashboard-page__sub-line">
               <span>待整改病历</span>
               <el-tag size="small" type="warning">{{ tasks.pendingFix }}</el-tag>
             </div>
-            <div class="sub-line">
+            <div class="dashboard-page__sub-line">
               <span>待回访</span>
               <el-tag size="small" type="warning">{{ tasks.pendingFollow }}</el-tag>
             </div>
-            <div class="sub-line">
+            <div class="dashboard-page__sub-line">
               <span>待评价打卡</span>
               <el-tag size="small" type="warning">{{ tasks.pendingEval }}</el-tag>
             </div>
@@ -45,20 +45,20 @@
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="8">
-        <el-card shadow="never" class="summary-card">
-          <div class="summary-card-head">
-            <div class="summary-card-title">技加工</div>
+        <el-card shadow="never" class="dashboard-page__summary-card">
+          <div class="dashboard-page__summary-card-head">
+            <div class="dashboard-page__summary-card-title">技加工</div>
           </div>
-          <div class="summary-sub">
-            <div class="sub-line">
+          <div class="dashboard-page__summary-sub">
+            <div class="dashboard-page__sub-line">
               <span>订单待确认</span>
               <el-tag size="small">{{ lab.pendingConfirm }}</el-tag>
             </div>
-            <div class="sub-line">
+            <div class="dashboard-page__sub-line">
               <span>待回执</span>
               <el-tag size="small">{{ lab.pendingReceipt }}</el-tag>
             </div>
-            <div class="sub-line">
+            <div class="dashboard-page__sub-line">
               <span>待验收</span>
               <el-tag size="small">{{ lab.pendingAccept }}</el-tag>
             </div>
@@ -68,78 +68,97 @@
     </el-row>
 
     <!-- 今日工作 + 个人业绩 -->
-    <el-row :gutter="16" class="stats-row">
+    <el-row :gutter="16" class="dashboard-page__stats-row">
       <el-col :xs="24" :lg="14">
-        <el-card shadow="never" class="block-card">
+        <el-card shadow="never" class="dashboard-page__block-card">
           <template #header>
-            <span class="block-title">今日工作</span>
+            <span class="dashboard-page__block-title">今日工作</span>
           </template>
-          <div class="work-stats-grid">
-            <div class="ws-item">
-              <div class="ws-label">初诊</div>
-              <div class="ws-num">{{ workStats.firstVisit }}</div>
+          <div class="dashboard-page__work-stats-grid">
+            <div class="dashboard-page__work-stat-item">
+              <div class="dashboard-page__work-stat-label">初诊</div>
+              <div class="dashboard-page__work-stat-number">{{ workStats.firstVisit }}</div>
             </div>
-            <div class="ws-item">
-              <div class="ws-label">复诊</div>
-              <div class="ws-num">{{ workStats.followVisit }}</div>
+            <div class="dashboard-page__work-stat-item">
+              <div class="dashboard-page__work-stat-label">复诊</div>
+              <div class="dashboard-page__work-stat-number">{{ workStats.followVisit }}</div>
             </div>
-            <div class="ws-item">
-              <div class="ws-label">总诊次</div>
-              <div class="ws-num primary">{{ workStats.totalVisit }}</div>
+            <div class="dashboard-page__work-stat-item">
+              <div class="dashboard-page__work-stat-label">总诊次</div>
+              <div
+                class="dashboard-page__work-stat-number dashboard-page__work-stat-number--primary"
+              >
+                {{ workStats.totalVisit }}
+              </div>
             </div>
-            <div class="ws-item">
-              <div class="ws-label">新增预约</div>
-              <div class="ws-num">{{ workStats.newAppt }}</div>
+            <div class="dashboard-page__work-stat-item">
+              <div class="dashboard-page__work-stat-label">新增预约</div>
+              <div class="dashboard-page__work-stat-number">{{ workStats.newAppt }}</div>
             </div>
-            <div class="ws-item">
-              <div class="ws-label">处方总数</div>
-              <div class="ws-num muted">—</div>
+            <div class="dashboard-page__work-stat-item">
+              <div class="dashboard-page__work-stat-label">处方总数</div>
+              <div
+                class="dashboard-page__work-stat-number dashboard-page__work-stat-number--muted"
+              >
+                —
+              </div>
             </div>
-            <div class="ws-item">
-              <div class="ws-label">今日实收</div>
-              <div class="ws-num muted">—</div>
+            <div class="dashboard-page__work-stat-item">
+              <div class="dashboard-page__work-stat-label">今日实收</div>
+              <div
+                class="dashboard-page__work-stat-number dashboard-page__work-stat-number--muted"
+              >
+                —
+              </div>
             </div>
           </div>
         </el-card>
       </el-col>
       <el-col :xs="24" :lg="10">
-        <el-card shadow="never" class="block-card performance-card">
+        <el-card
+          shadow="never"
+          class="dashboard-page__block-card dashboard-page__block-card--performance"
+        >
           <template #header>
-            <span class="block-title">个人业绩</span>
+            <span class="dashboard-page__block-title">个人业绩</span>
           </template>
-          <el-tabs v-model="perfTab" class="perf-tabs">
+          <el-tabs v-model="perfTab" class="dashboard-page__performance-tabs">
             <el-tab-pane label="现金实收" name="cash" />
             <el-tab-pane label="诊疗服务" name="service" />
             <el-tab-pane label="排行" name="rank" />
           </el-tabs>
-          <div class="perf-body">
-            <div class="perf-row">
+          <div class="dashboard-page__performance-body">
+            <div class="dashboard-page__performance-row">
               <span>本月收入</span>
               <strong>¥ {{ performance.monthIncome.toFixed(2) }}</strong>
             </div>
             <el-progress
-              class="perf-progress"
+              class="dashboard-page__performance-progress"
               :percentage="performance.progress"
               :stroke-width="10"
             />
-            <div class="perf-row sub">
+            <div
+              class="dashboard-page__performance-row dashboard-page__performance-row--sub"
+            >
               <span>本月目标</span>
               <span>¥ {{ performance.monthGoal.toFixed(2) }}</span>
             </div>
-            <p class="perf-hint">本月收入为收费单中「收费人」与本人姓名一致的实付合计</p>
+            <p class="dashboard-page__performance-hint">
+              本月收入为收费单中「收费人」与本人姓名一致的实付合计
+            </p>
           </div>
         </el-card>
       </el-col>
     </el-row>
 
     <!-- 今日就诊 / 今日随访 -->
-    <el-card shadow="never" class="table-card">
+    <el-card shadow="never" class="dashboard-page__table-card">
       <el-tabs v-model="mainTab" @tab-change="onMainTabChange">
         <el-tab-pane :label="`今日就诊 (${todayAppointments.length})`" name="visit" />
         <el-tab-pane :label="`今日随访 (${followUpCount})`" name="follow" />
       </el-tabs>
 
-      <div class="table-toolbar">
+      <div class="dashboard-page__table-toolbar">
         <el-date-picker
           v-model="filterDate"
           type="date"
@@ -147,17 +166,17 @@
           placeholder="选择日期"
           style="width: 160px"
         />
-        <el-checkbox-group v-model="filterChecks" class="filter-checks">
+        <el-checkbox-group v-model="filterChecks" class="dashboard-page__filter-checks">
           <el-checkbox value="appt">包含预约</el-checkbox>
           <el-checkbox value="left">包含已离开</el-checkbox>
           <el-checkbox value="noreg">包含未挂号</el-checkbox>
         </el-checkbox-group>
-        <div class="table-toolbar-right">
+        <div class="dashboard-page__table-toolbar-right">
           <el-input
             v-model="tableKeyword"
             clearable
             placeholder="姓名 / 病历号 / 手机"
-            class="table-toolbar-search"
+            class="dashboard-page__table-toolbar-search"
             @clear="loadTodayData"
             @keyup.enter="loadTodayData"
           />
@@ -171,7 +190,7 @@
         stripe
         border
         empty-text="抱歉，暂无相关数据"
-        class="workbench-table"
+        class="dashboard-page__table"
         max-height="480"
       >
         <el-table-column
@@ -236,7 +255,7 @@
           header-align="center"
         >
           <template #default="{ row }">
-            <div class="table-actions">
+            <div class="dashboard-page__table-actions">
               <el-button text bg type="primary" @click="goPatient(row)">患者</el-button>
               <el-button text bg type="primary" @click="router.push('/appointments')"
                 >预约</el-button
@@ -431,21 +450,21 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.workbench-page {
+.dashboard-page {
   padding: 16px 20px 24px;
   max-width: 1600px;
   margin: 0 auto;
 }
 
-.summary-row {
+.dashboard-page__summary-row {
   margin-bottom: 16px;
 }
 
-.summary-row :deep(.el-col) {
+.dashboard-page__summary-row :deep(.el-col) {
   display: flex;
 }
 
-.summary-card {
+.dashboard-page__summary-card {
   border-radius: 10px;
   flex: 1;
   width: 100%;
@@ -454,14 +473,14 @@ onMounted(() => {
   flex-direction: column;
 }
 
-.summary-card :deep(.el-card__body) {
+.dashboard-page__summary-card :deep(.el-card__body) {
   flex: 1;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
 }
 
-.summary-card-head {
+.dashboard-page__summary-card-head {
   flex-shrink: 0;
   min-height: 44px;
   display: flex;
@@ -472,7 +491,7 @@ onMounted(() => {
   box-sizing: border-box;
 }
 
-.summary-card-title {
+.dashboard-page__summary-card-title {
   font-size: 15px;
   font-weight: 600;
   color: var(--el-text-color-primary);
@@ -480,18 +499,18 @@ onMounted(() => {
   margin: 0;
 }
 
-.summary-sub {
+.dashboard-page__summary-sub {
   flex: 1;
   margin-top: 0;
   padding-top: 0;
   min-height: 0;
 }
 
-.summary-sub .sub-line + .sub-line {
+.dashboard-page__summary-sub .dashboard-page__sub-line + .dashboard-page__sub-line {
   margin-top: 6px;
 }
 
-.sub-line {
+.dashboard-page__sub-line {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -499,15 +518,15 @@ onMounted(() => {
   color: var(--el-text-color-regular);
 }
 
-.stats-row {
+.dashboard-page__stats-row {
   margin-bottom: 16px;
 }
 
-.stats-row :deep(.el-col) {
+.dashboard-page__stats-row :deep(.el-col) {
   display: flex;
 }
 
-.block-card {
+.dashboard-page__block-card {
   border-radius: 10px;
   min-height: 200px;
   flex: 1;
@@ -516,19 +535,19 @@ onMounted(() => {
   flex-direction: column;
 }
 
-.block-card :deep(.el-card__body) {
+.dashboard-page__block-card :deep(.el-card__body) {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 0;
 }
 
-.block-title {
+.dashboard-page__block-title {
   font-weight: 600;
   font-size: 15px;
 }
 
-.work-stats-grid {
+.dashboard-page__work-stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px 16px;
@@ -536,7 +555,7 @@ onMounted(() => {
   align-content: start;
 }
 
-.ws-item {
+.dashboard-page__work-stat-item {
   background: var(--el-fill-color-light);
   border-radius: 8px;
   padding: 12px 14px;
@@ -548,45 +567,45 @@ onMounted(() => {
   min-height: 88px;
 }
 
-.ws-label {
+.dashboard-page__work-stat-label {
   font-size: 12px;
   color: var(--el-text-color-secondary);
   margin-bottom: 8px;
   width: 100%;
 }
 
-.ws-num {
+.dashboard-page__work-stat-number {
   font-size: 22px;
   font-weight: 600;
   color: var(--el-text-color-primary);
   line-height: 1.2;
 }
 
-.ws-num.primary {
+.dashboard-page__work-stat-number--primary {
   color: var(--el-color-primary);
 }
 
-.ws-num.muted {
+.dashboard-page__work-stat-number--muted {
   font-size: 16px;
   color: var(--el-text-color-placeholder);
 }
 
-.performance-card :deep(.el-card__body) {
+.dashboard-page__block-card--performance :deep(.el-card__body) {
   padding-top: 0;
 }
 
-.perf-tabs :deep(.el-tabs__header) {
+.dashboard-page__performance-tabs :deep(.el-tabs__header) {
   margin-bottom: 12px;
 }
 
-.perf-body {
+.dashboard-page__performance-body {
   padding: 4px 0 8px;
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-.perf-row {
+.dashboard-page__performance-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -595,41 +614,41 @@ onMounted(() => {
   font-size: 14px;
 }
 
-.perf-row strong {
+.dashboard-page__performance-row strong {
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
-.perf-progress {
+.dashboard-page__performance-progress {
   margin: 4px 0 12px;
 }
 
-.perf-row.sub {
+.dashboard-page__performance-row--sub {
   color: var(--el-text-color-secondary);
   font-size: 13px;
   margin-top: 0;
   margin-bottom: 0;
 }
 
-.perf-row.sub span:last-child {
+.dashboard-page__performance-row--sub span:last-child {
   font-variant-numeric: tabular-nums;
 }
 
-.perf-hint {
+.dashboard-page__performance-hint {
   margin: 12px 0 0;
   font-size: 12px;
   color: var(--el-text-color-placeholder);
 }
 
-.table-card {
+.dashboard-page__table-card {
   border-radius: 10px;
 }
 
-.table-card :deep(.el-tabs__header) {
+.dashboard-page__table-card :deep(.el-tabs__header) {
   margin-bottom: 0;
 }
 
-.table-toolbar {
+.dashboard-page__table-toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -640,14 +659,14 @@ onMounted(() => {
   margin-bottom: 12px;
 }
 
-.filter-checks {
+.dashboard-page__filter-checks {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 12px;
 }
 
-.table-toolbar-right {
+.dashboard-page__table-toolbar-right {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -655,15 +674,15 @@ onMounted(() => {
   margin-left: auto;
 }
 
-.table-toolbar-search {
+.dashboard-page__table-toolbar-search {
   width: 220px;
 }
 
-.workbench-table {
+.dashboard-page__table {
   width: 100%;
 }
 
-.table-actions {
+.dashboard-page__table-actions {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -673,21 +692,21 @@ onMounted(() => {
 }
 
 @media (max-width: 768px) {
-  .work-stats-grid {
+  .dashboard-page__work-stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .table-toolbar {
+  .dashboard-page__table-toolbar {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .table-toolbar-right {
+  .dashboard-page__table-toolbar-right {
     margin-left: 0;
     width: 100%;
   }
 
-  .table-toolbar-search {
+  .dashboard-page__table-toolbar-search {
     width: 100% !important;
   }
 }

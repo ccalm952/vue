@@ -1,20 +1,20 @@
 <template>
-  <div class="settings-patient-tags">
-    <el-card shadow="never" class="page-card">
+  <div class="settings-patient-tags-page">
+    <el-card shadow="never" class="settings-patient-tags-page__card">
       <template #header>
-        <div class="card-header">
-          <span class="card-title">患者标签</span>
-          <span class="card-desc">
+        <div class="settings-patient-tags-page__card-header">
+          <span class="settings-patient-tags-page__card-title">患者标签</span>
+          <span class="settings-patient-tags-page__card-description">
             保存后，新增和编辑患者时只允许选择这里的标签；同时会从全部患者档案中移除已不在列表里的历史标签。
           </span>
         </div>
       </template>
 
-      <div class="tag-cloud">
+      <div class="settings-patient-tags-page__tag-cloud">
         <el-tag
           v-for="tag in tags"
           :key="tag"
-          class="tag-item"
+          class="settings-patient-tags-page__tag"
           closable
           type="info"
           effect="plain"
@@ -22,10 +22,12 @@
         >
           {{ tag }}
         </el-tag>
-        <span v-if="!tags.length" class="empty-hint">暂无标签，请在下方添加</span>
+        <span v-if="!tags.length" class="settings-patient-tags-page__empty-hint">
+          暂无标签，请在下方添加
+        </span>
       </div>
 
-      <div class="add-row">
+      <div class="settings-patient-tags-page__add-row">
         <el-input
           v-model="newTagInput"
           placeholder="输入标签名称后点击添加或按回车"
@@ -123,35 +125,35 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.settings-patient-tags {
+.settings-patient-tags-page {
   padding: 16px;
   box-sizing: border-box;
 }
 
-.page-card {
+.settings-patient-tags-page__card {
   max-width: 800px;
 }
 
-.card-header {
+.settings-patient-tags-page__card-header {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 6px;
 }
 
-.card-title {
+.settings-patient-tags-page__card-title {
   font-size: 16px;
   font-weight: 600;
   color: #303133;
 }
 
-.card-desc {
+.settings-patient-tags-page__card-description {
   font-size: 13px;
   color: #909399;
   font-weight: normal;
 }
 
-.tag-cloud {
+.settings-patient-tags-page__tag-cloud {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -160,16 +162,16 @@ onUnmounted(() => {
   margin-bottom: 20px;
 }
 
-.tag-item {
+.settings-patient-tags-page__tag {
   font-size: 13px;
 }
 
-.empty-hint {
+.settings-patient-tags-page__empty-hint {
   font-size: 13px;
   color: #c0c4cc;
 }
 
-.add-row {
+.settings-patient-tags-page__add-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;

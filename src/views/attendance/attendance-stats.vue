@@ -1,14 +1,14 @@
 <template>
   <div class="attendance-stats-page">
-    <div class="stats-toolbar">
+    <div class="attendance-stats-page__toolbar">
       <el-button text bg type="primary" @click="router.push('/attendance')">
         <el-icon><ArrowLeft /></el-icon> 返回打卡
       </el-button>
     </div>
 
-    <el-card class="stats-filter-card" shadow="never">
-      <div class="filter-row">
-        <span class="filter-label">统计月份</span>
+    <el-card class="attendance-stats-page__filters-card" shadow="never">
+      <div class="attendance-stats-page__filters">
+        <span class="attendance-stats-page__filter-label">统计月份</span>
         <el-date-picker
           v-model="monthVal"
           type="month"
@@ -18,39 +18,13 @@
         />
         <el-button type="primary" :loading="loading" @click="loadData">查询</el-button>
       </div>
-      <p class="filter-hint">
-        工作日按周一至周五计算；加班时长按当前「班次时间配置」中的正常下班时刻起算（与打卡页一致）。
-      </p>
     </el-card>
 
     <template v-if="summary">
-      <el-alert
-        v-if="summary.noRecordInMonth.length"
-        type="warning"
-        show-icon
-        :closable="false"
-        class="stats-alert"
-      >
-        <template #title
-          >本月无任何打卡记录的员工（{{ summary.noRecordInMonth.length }} 人）</template
-        >
-        <div class="name-tags">
-          <el-tag
-            v-for="p in summary.noRecordInMonth"
-            :key="p.userId"
-            type="info"
-            effect="plain"
-            size="small"
-          >
-            {{ p.name }}（{{ p.role }}）
-          </el-tag>
-        </div>
-      </el-alert>
-
-      <el-card class="stats-table-card" shadow="never">
+      <el-card class="attendance-stats-page__summary-card" shadow="never">
         <template #header>
-          <span class="card-head-title">{{ summary.month }} 考勤汇总</span>
-          <span class="card-head-meta">
+          <span class="attendance-stats-page__summary-title">{{ summary.month }} 考勤汇总</span>
+          <span class="attendance-stats-page__summary-meta">
             工作日 {{ summary.workdayCount }} 天 · 加班起算：上午 {{ summary.overtimeMorningEnd }} /
             下午 {{ summary.overtimeAfternoonEnd }}
           </span>
@@ -65,47 +39,60 @@
         >
           <el-table-column type="expand">
             <template #default="{ row }">
-              <div class="expand-detail">
-                <div v-if="detailLoading[row.userId]" class="expand-loading">加载中…</div>
+              <div class="attendance-stats-page__details">
+                <div
+                  v-if="detailLoading[row.userId]"
+                  class="attendance-stats-page__details-loading"
+                >
+                  加载中...
+                </div>
                 <template v-else-if="row.userId in detailByUserId">
                   <template v-if="detailByUserId[row.userId]!.length">
-                    <p class="expand-detail-title">
+                    <p class="attendance-stats-page__details-title">
                       有打卡记录的日期（{{ detailByUserId[row.userId]!.length }} 天）
                     </p>
                     <el-table
                       :data="detailByUserId[row.userId]"
                       stripe
                       size="small"
-                      class="expand-punch-table"
+                      class="attendance-stats-page__details-table"
                       empty-text="暂无数据"
                     >
                       <el-table-column prop="date" label="日期" width="120" />
                       <el-table-column label="上午上班" width="100" align="center">
                         <template #default="{ row: r }">
-                          <span :class="{ missing: !r.morningIn }">{{
-                            r.morningIn || "--:--"
-                          }}</span>
+                          <span
+                            :class="{ 'attendance-stats-page__punch-time--missing': !r.morningIn }"
+                            >{{ r.morningIn || "--:--" }}</span
+                          >
                         </template>
                       </el-table-column>
                       <el-table-column label="上午下班" width="100" align="center">
                         <template #default="{ row: r }">
-                          <span :class="{ missing: !r.morningOut }">{{
-                            r.morningOut || "--:--"
-                          }}</span>
+                          <span
+                            :class="{ 'attendance-stats-page__punch-time--missing': !r.morningOut }"
+                            >{{ r.morningOut || "--:--" }}</span
+                          >
                         </template>
                       </el-table-column>
                       <el-table-column label="下午上班" width="100" align="center">
                         <template #default="{ row: r }">
-                          <span :class="{ missing: !r.afternoonIn }">{{
-                            r.afternoonIn || "--:--"
-                          }}</span>
+                          <span
+                            :class="{
+                              'attendance-stats-page__punch-time--missing': !r.afternoonIn,
+                            }"
+                            >{{ r.afternoonIn || "--:--" }}</span
+                          >
                         </template>
                       </el-table-column>
                       <el-table-column label="下午下班" width="100" align="center">
                         <template #default="{ row: r }">
-                          <span :class="{ missing: !r.afternoonOut }">{{
-                            r.afternoonOut || "--:--"
-                          }}</span>
+                          <span
+                            :class="{
+                              'attendance-stats-page__punch-time--missing': !r.afternoonOut,
+                            }"
+                            >{{ r.afternoonOut || "--:--" }}</span
+                          >
                         </template>
                       </el-table-column>
                       <el-table-column label="加班时长" width="130" align="center">
@@ -113,14 +100,17 @@
                           <el-tag v-if="r.overtimeMinutes > 0" type="warning" size="small">
                             {{ r.overtimeStr }}
                           </el-tag>
-                          <span v-else class="text-muted">-</span>
+                          <span v-else class="attendance-stats-page__text--muted">-</span>
                         </template>
                       </el-table-column>
                     </el-table>
                   </template>
                   <el-empty v-else description="本月无打卡记录" :image-size="72" />
                 </template>
-                <p v-else-if="detailLoadFailed[row.userId]" class="expand-retry-hint">
+                <p
+                  v-else-if="detailLoadFailed[row.userId]"
+                  class="attendance-stats-page__details-retry"
+                >
                   加载失败，请收起本行后重新展开重试
                 </p>
               </div>
@@ -139,9 +129,10 @@
           </el-table-column>
           <el-table-column prop="incompleteWorkdays" label="缺卡工作日" width="110" align="center">
             <template #default="{ row }">
-              <span :class="{ 'text-danger': row.incompleteWorkdays > 0 }">{{
-                row.incompleteWorkdays
-              }}</span>
+              <span
+                :class="{ 'attendance-stats-page__text--danger': row.incompleteWorkdays > 0 }"
+                >{{ row.incompleteWorkdays }}</span
+              >
             </template>
           </el-table-column>
           <el-table-column
@@ -155,7 +146,7 @@
               <el-tag v-if="row.totalOvertimeMinutes > 0" type="warning" size="small">
                 {{ row.overtimeStr }}
               </el-tag>
-              <span v-else class="text-muted">{{ row.overtimeStr }}</span>
+              <span v-else class="attendance-stats-page__text--muted">{{ row.overtimeStr }}</span>
             </template>
           </el-table-column>
           <el-table-column label="本月是否有打卡" width="130" align="center">
@@ -198,12 +189,6 @@ function defaultMonth(): string {
 const monthVal = ref(defaultMonth());
 const loading = ref(false);
 
-interface NoRecordRow {
-  userId: number;
-  name: string;
-  role: string;
-}
-
 interface EmployeeRow {
   userId: number;
   name: string;
@@ -226,7 +211,6 @@ interface SummaryPayload {
   overtimeMorningEnd: string;
   overtimeAfternoonEnd: string;
   employees: EmployeeRow[];
-  noRecordInMonth: NoRecordRow[];
 }
 
 interface ApiResponse<T> {
@@ -405,112 +389,93 @@ onMounted(async () => {
 
 <style scoped>
 .attendance-stats-page {
-  padding: 20px;
+  padding: 16px;
   max-width: 1400px;
-  margin: 0 auto;
+  margin: auto;
   box-sizing: border-box;
 }
 
-.stats-toolbar {
+.attendance-stats-page__toolbar {
   margin-bottom: 16px;
 }
 
-.stats-filter-card {
+.attendance-stats-page__filters-card {
   border-radius: 12px;
   margin-bottom: 16px;
 }
 
-.filter-row {
+.attendance-stats-page__filters {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
 }
 
-.filter-label {
+.attendance-stats-page__filter-label {
   font-size: var(--el-font-size-base);
   color: var(--el-text-color-regular);
 }
 
-.filter-hint {
-  margin: 12px 0 0;
-  font-size: var(--el-font-size-extra-small);
-  color: var(--el-text-color-secondary);
-  line-height: 1.5;
-}
-
-.stats-alert {
-  margin-bottom: 16px;
-  border-radius: 10px;
-}
-
-.name-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.stats-table-card {
+.attendance-stats-page__summary-card {
   border-radius: 12px;
 }
 
-.stats-table-card :deep(.el-card__header) {
+.attendance-stats-page__summary-card :deep(.el-card__header) {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: 12px;
 }
 
-.card-head-title {
+.attendance-stats-page__summary-title {
   font-weight: 600;
   font-size: 15px;
   color: var(--el-text-color-primary);
 }
 
-.card-head-meta {
+.attendance-stats-page__summary-meta {
   font-size: var(--el-font-size-extra-small);
   color: var(--el-text-color-secondary);
 }
 
-.expand-detail {
+.attendance-stats-page__details {
   padding: 8px 12px 12px 40px;
 }
 
-.expand-loading {
+.attendance-stats-page__details-loading {
   font-size: var(--el-font-size-small);
   color: var(--el-text-color-secondary);
   padding: 8px 0;
 }
 
-.expand-detail-title {
+.attendance-stats-page__details-title {
   font-size: var(--el-font-size-small);
   color: var(--el-text-color-secondary);
   margin: 0 0 10px;
 }
 
-.expand-punch-table {
+.attendance-stats-page__details-table {
   max-width: 920px;
 }
 
-.expand-punch-table .missing {
+.attendance-stats-page__details-table .attendance-stats-page__punch-time--missing {
   color: var(--el-color-danger);
   font-size: var(--el-font-size-small);
 }
 
-.expand-retry-hint {
+.attendance-stats-page__details-retry {
   font-size: var(--el-font-size-small);
   color: var(--el-color-danger);
   margin: 0;
   padding: 8px 0;
 }
 
-.text-danger {
+.attendance-stats-page__text--danger {
   color: var(--el-color-danger);
   font-weight: 600;
 }
 
-.text-muted {
+.attendance-stats-page__text--muted {
   color: var(--el-text-color-placeholder);
 }
 </style>

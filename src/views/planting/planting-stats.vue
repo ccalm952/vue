@@ -1,12 +1,12 @@
 <template>
-  <div class="planting-page">
+  <div class="planting-stats-page">
     <el-card shadow="never">
       <template #header>
-        <span class="page-title">统计</span>
-        <span class="page-sub">按人员统计就诊次数，按月份统计植体数量</span>
+        <span class="planting-stats-page__title">统计</span>
+        <span class="planting-stats-page__subtitle">按人员统计就诊次数，按月份统计植体数量</span>
       </template>
 
-      <div class="month-bar">
+      <div class="planting-stats-page__month-bar">
         <span>月份</span>
         <el-select
           v-model="month"
@@ -17,7 +17,7 @@
         >
           <el-option v-for="item in months" :key="item" :label="item" :value="item" />
         </el-select>
-        <span class="month-total">植体数量：<strong>{{ monthTotal }}</strong></span>
+        <span class="planting-stats-page__month-total">植体数量：<strong>{{ monthTotal }}</strong></span>
         <el-button :loading="loading" @click="loadAll">刷新</el-button>
       </div>
 
@@ -90,31 +90,31 @@ onMounted(() => loadAll());
 </script>
 
 <style scoped>
-.planting-page {
+.planting-stats-page {
   padding: 16px;
   max-width: 800px;
   margin: 0 auto;
 }
 
-.page-title {
+.planting-stats-page__title {
   font-weight: 600;
   font-size: 16px;
   margin-right: 12px;
 }
 
-.page-sub {
+.planting-stats-page__subtitle {
   font-size: var(--el-font-size-extra-small);
   color: var(--el-text-color-secondary);
 }
 
-.month-bar {
+.planting-stats-page__month-bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
 }
 
-.month-total {
+.planting-stats-page__month-total {
   margin-left: 8px;
   font-size: var(--el-font-size-base);
   color: var(--el-text-color-regular);

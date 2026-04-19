@@ -1,15 +1,15 @@
 <template>
-  <div class="planting-page">
+  <div class="planting-add-page">
     <el-card shadow="never">
       <template #header>
-        <span class="page-title">新增种植记录</span>
-        <span class="page-sub">
+        <span class="planting-add-page__title">新增种植记录</span>
+        <span class="planting-add-page__subtitle">
           保存时写入患者库与种植就诊记录，与桌面版保持一致，不包含 e看牙 自动化流程。
         </span>
       </template>
 
-      <el-form label-position="top" class="main-form">
-        <div class="form-grid">
+      <el-form label-position="top" class="planting-add-page__form">
+        <div class="planting-add-page__form-grid">
           <el-form-item label="日期" required>
             <el-date-picker
               v-model="form.visitDate"
@@ -30,9 +30,9 @@
               @select="handleSelectPatient"
             >
               <template #default="{ item }">
-                <div class="autocomplete-item">
-                  <span class="autocomplete-name">{{ item.value }}</span>
-                  <span class="autocomplete-extra">
+                <div class="planting-add-page__autocomplete-item">
+                  <span class="planting-add-page__autocomplete-name">{{ item.value }}</span>
+                  <span class="planting-add-page__autocomplete-extra">
                     {{ item.phone }}{{ item.source ? " | " + item.source : "" }}
                   </span>
                 </div>
@@ -70,8 +70,8 @@
           </el-form-item>
         </div>
 
-        <div class="teeth-head">
-          <span class="teeth-title">牙位与植体</span>
+        <div class="planting-add-page__teeth-head">
+          <span class="planting-add-page__teeth-title">牙位与植体</span>
           <div>
             <el-button @click="addTooth">新增一行</el-button>
             <el-button @click="removeSelected" :disabled="!teethSelection.length">
@@ -104,7 +104,12 @@
           </el-table-column>
         </el-table>
 
-        <el-button type="primary" class="save-btn" :loading="saving" @click="submit">
+        <el-button
+          type="primary"
+          class="planting-add-page__save-button"
+          :loading="saving"
+          @click="submit"
+        >
           保存
         </el-button>
       </el-form>
@@ -307,56 +312,56 @@ async function submit() {
 </script>
 
 <style scoped>
-.planting-page {
+.planting-add-page {
   padding: 16px;
   max-width: 900px;
   margin: 0 auto;
 }
 
-.page-title {
+.planting-add-page__title {
   font-weight: 600;
   font-size: 16px;
   margin-right: 12px;
 }
 
-.page-sub {
+.planting-add-page__subtitle {
   font-size: var(--el-font-size-extra-small);
   color: var(--el-text-color-secondary);
 }
 
-.form-grid {
+.planting-add-page__form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 0 16px;
 }
 
-.teeth-head {
+.planting-add-page__teeth-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin: 20px 0 12px;
 }
 
-.teeth-title {
+.planting-add-page__teeth-title {
   font-weight: 600;
 }
 
-.save-btn {
+.planting-add-page__save-button {
   margin-top: 20px;
 }
 
-.autocomplete-item {
+.planting-add-page__autocomplete-item {
   display: flex;
   align-items: center;
   gap: 10px;
   line-height: 1.4;
 }
 
-.autocomplete-name {
+.planting-add-page__autocomplete-name {
   font-weight: 600;
 }
 
-.autocomplete-extra {
+.planting-add-page__autocomplete-extra {
   font-size: 12px;
   color: var(--el-text-color-secondary);
 }

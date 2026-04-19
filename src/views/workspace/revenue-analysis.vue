@@ -1,6 +1,6 @@
 <template>
-  <div class="revenue-page scrollbar-hide">
-    <div class="revenue-toolbar">
+  <div class="revenue-analysis-page scrollbar-hide">
+    <div class="revenue-analysis-page__toolbar">
       <el-radio-group v-model="queryMode" size="default">
         <el-radio-button value="day">日查询</el-radio-button>
         <el-radio-button value="month">月查询</el-radio-button>
@@ -15,7 +15,7 @@
         range-separator="至"
         start-placeholder="开始日期"
         end-placeholder="结束日期"
-        class="revenue-date"
+        class="revenue-analysis-page__date"
       />
       <el-date-picker
         v-else
@@ -27,15 +27,15 @@
         range-separator="至"
         start-placeholder="开始月份"
         end-placeholder="结束月份"
-        class="revenue-date"
+        class="revenue-analysis-page__date"
       />
       <el-button type="primary" :icon="Search" :loading="loading" @click="runQuery">查询</el-button>
     </div>
 
-    <div class="revenue-summary">
-      <div class="revenue-summary-line">
-        <span class="revenue-summary-label">实收总额</span>
-        <span class="revenue-summary-value"
+    <div class="revenue-analysis-page__summary">
+      <div class="revenue-analysis-page__summary-line">
+        <span class="revenue-analysis-page__summary-label">实收总额</span>
+        <span class="revenue-analysis-page__summary-value"
           >¥
           {{
             totalActual.toLocaleString("zh-CN", {
@@ -48,19 +48,27 @@
           content="统计所选日期范围内收费记录的实付合计；按员工维度时按「收费人」与员工姓名对应汇总。"
           placement="top"
         >
-          <el-icon class="revenue-summary-tip"><QuestionFilled /></el-icon>
+          <el-icon class="revenue-analysis-page__summary-tip"><QuestionFilled /></el-icon>
         </el-tooltip>
       </div>
-      <div class="revenue-summary-sub muted">所选区间：{{ rangeLabel }}</div>
+      <div
+        class="revenue-analysis-page__summary-sub revenue-analysis-page__summary-sub--muted"
+      >
+        所选区间：{{ rangeLabel }}
+      </div>
     </div>
 
-    <div class="revenue-chart-card">
-      <el-radio-group v-model="chartDimension" size="default" class="revenue-dimension">
+    <div class="revenue-analysis-page__chart-card">
+      <el-radio-group
+        v-model="chartDimension"
+        size="default"
+        class="revenue-analysis-page__dimension"
+      >
         <el-radio-button value="staff">员工实收分布</el-radio-button>
         <el-radio-button value="feeSub">收费小类实收分布</el-radio-button>
       </el-radio-group>
-      <p class="revenue-chart-hint">点击饼图扇区查看对应收费明细</p>
-      <div ref="chartRef" class="revenue-chart" />
+      <p class="revenue-analysis-page__chart-hint">点击饼图扇区查看对应收费明细</p>
+      <div ref="chartRef" class="revenue-analysis-page__chart" />
     </div>
 
     <el-dialog
@@ -68,11 +76,13 @@
       title="详细列表"
       width="92%"
       destroy-on-close
-      class="revenue-detail-dialog"
+      class="revenue-analysis-page__detail-dialog"
       @closed="onDetailClosed"
     >
-      <div v-if="detailSliceLabel" class="revenue-detail-sub">{{ detailSliceLabel }}</div>
-      <p v-if="detailHasOrphanPatient" class="revenue-detail-warn">
+      <div v-if="detailSliceLabel" class="revenue-analysis-page__detail-sub">
+        {{ detailSliceLabel }}
+      </div>
+      <p v-if="detailHasOrphanPatient" class="revenue-analysis-page__detail-warn">
         部分行无患者档案：通常为患者已不在库中但收费记录仍在（例如直接在数据库删患者、或旧数据）。通过本系统「删除患者」会同时删除其收费记录。
       </p>
       <el-table
@@ -81,7 +91,7 @@
         border
         stripe
         max-height="480"
-        class="revenue-detail-table"
+        class="revenue-analysis-page__detail-table"
       >
         <el-table-column prop="chargeTime" label="收费时间" min-width="150" />
         <el-table-column prop="patientSource" label="病历号" width="110" show-overflow-tooltip />
@@ -396,14 +406,14 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.revenue-page {
+.revenue-analysis-page {
   padding: 16px 20px 24px;
   max-width: 1200px;
   margin: 0 auto;
   box-sizing: border-box;
 }
 
-.revenue-toolbar {
+.revenue-analysis-page__toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -411,18 +421,18 @@ onBeforeUnmount(() => {
   margin-bottom: 20px;
 }
 
-.revenue-date {
+.revenue-analysis-page__date {
   width: 280px;
   max-width: 100%;
 }
 
 @media (min-width: 640px) {
-  .revenue-date {
+  .revenue-analysis-page__date {
     width: 320px;
   }
 }
 
-.revenue-summary {
+.revenue-analysis-page__summary {
   background: #fff;
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
@@ -430,65 +440,65 @@ onBeforeUnmount(() => {
   margin-bottom: 16px;
 }
 
-.revenue-summary-line {
+.revenue-analysis-page__summary-line {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.revenue-summary-label {
+.revenue-analysis-page__summary-label {
   font-size: 15px;
   font-weight: 600;
   color: var(--el-text-color-primary);
 }
 
-.revenue-summary-value {
+.revenue-analysis-page__summary-value {
   font-size: 26px;
   font-weight: 700;
   color: var(--el-color-primary);
   letter-spacing: 0.02em;
 }
 
-.revenue-summary-tip {
+.revenue-analysis-page__summary-tip {
   font-size: 18px;
   color: var(--el-text-color-secondary);
   cursor: help;
 }
 
-.revenue-summary-sub {
+.revenue-analysis-page__summary-sub {
   margin-top: 8px;
   font-size: 13px;
 }
 
-.revenue-summary-sub.muted {
+.revenue-analysis-page__summary-sub--muted {
   color: var(--el-text-color-secondary);
 }
 
-.revenue-chart-card {
+.revenue-analysis-page__chart-card {
   background: #fff;
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
   padding: 16px 16px 8px;
 }
 
-.revenue-dimension {
+.revenue-analysis-page__dimension {
   margin-bottom: 8px;
 }
 
-.revenue-chart-hint {
+.revenue-analysis-page__chart-hint {
   margin: 0 0 8px;
   font-size: 12px;
   color: var(--el-text-color-secondary);
 }
 
-.revenue-detail-sub {
+.revenue-analysis-page__detail-sub {
   font-size: 13px;
   color: var(--el-text-color-regular);
   margin-bottom: 10px;
 }
 
-.revenue-detail-warn {
+.revenue-analysis-page__detail-warn {
   margin: 0 0 10px;
   padding: 8px 10px;
   font-size: 12px;
@@ -499,7 +509,7 @@ onBeforeUnmount(() => {
   border: 1px solid var(--el-color-warning-light-5);
 }
 
-.revenue-chart {
+.revenue-analysis-page__chart {
   width: 100%;
   height: 420px;
 }

@@ -1,6 +1,9 @@
 <template>
-  <div class="planting-page">
-    <el-card shadow="never" class="add-card">
+  <div class="planting-inventory-page">
+    <el-card
+      shadow="never"
+      class="planting-inventory-page__card planting-inventory-page__card--add"
+    >
       <template #header>补货</template>
       <el-form inline>
         <el-form-item label="品牌">
@@ -21,7 +24,7 @@
           <el-button type="primary" :loading="adding" @click="addStock">添加</el-button>
         </el-form-item>
       </el-form>
-      <el-form inline class="query-left">
+      <el-form inline class="planting-inventory-page__query-form">
         <el-form-item label="查库存">
           <el-input v-model="leftForm.brand" placeholder="品牌" style="width: 140px" />
         </el-form-item>
@@ -32,14 +35,14 @@
           <el-button @click="queryLeft">查询</el-button>
         </el-form-item>
         <el-form-item v-if="leftResult">
-          <span class="left-text">{{ leftResult }}</span>
+          <span class="planting-inventory-page__left-text">{{ leftResult }}</span>
         </el-form-item>
       </el-form>
     </el-card>
 
     <el-card shadow="never">
       <template #header>
-        <div class="card-head">
+        <div class="planting-inventory-page__card-header">
           <span>库存列表</span>
           <div>
             <el-button :loading="loading" @click="load">刷新</el-button>
@@ -245,7 +248,7 @@ onMounted(() => load());
 </script>
 
 <style scoped>
-.planting-page {
+.planting-inventory-page {
   padding: 16px;
   max-width: 1100px;
   margin: 0 auto;
@@ -254,7 +257,7 @@ onMounted(() => load());
   gap: 16px;
 }
 
-.card-head {
+.planting-inventory-page__card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -262,11 +265,11 @@ onMounted(() => load());
   gap: 8px;
 }
 
-.query-left {
+.planting-inventory-page__query-form {
   margin-top: 8px;
 }
 
-.left-text {
+.planting-inventory-page__left-text {
   color: var(--el-color-primary);
   font-size: var(--el-font-size-small);
 }

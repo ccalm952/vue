@@ -9,7 +9,7 @@
     @closed="onDialogClosed"
   >
     <el-form ref="addFormRef" :model="addForm" :rules="addRules" label-position="top">
-      <div class="dialog-row">
+      <div class="patient-add-edit-dialog__row">
         <el-form-item label="姓名" prop="name">
           <el-input v-model="addForm.name" />
         </el-form-item>
@@ -17,7 +17,7 @@
           <el-input v-model="addForm.phone" />
         </el-form-item>
       </div>
-      <div class="dialog-row">
+      <div class="patient-add-edit-dialog__row">
         <el-form-item label="性别" prop="gender">
           <el-select v-model="addForm.gender" placeholder="" style="width: 100%">
             <el-option label="男" value="男" />
@@ -28,7 +28,7 @@
           <el-input v-model="addForm.source" />
         </el-form-item>
       </div>
-      <div class="dialog-row">
+      <div class="patient-add-edit-dialog__row">
         <el-form-item label="出生日期" prop="birthday">
           <el-date-picker
             v-model="addForm.birthday"
@@ -230,12 +230,12 @@ function onDialogClosed() {
 </script>
 
 <style scoped>
-.dialog-row {
+.patient-add-edit-dialog__row {
   display: flex;
   gap: 16px;
 }
 
-.dialog-row > .el-form-item {
+.patient-add-edit-dialog__row > .el-form-item {
   flex: 1;
 }
 </style>

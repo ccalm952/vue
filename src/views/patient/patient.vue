@@ -1,9 +1,9 @@
 <template>
   <div class="patient-page">
     <RecentPatientsSidebar />
-    <div class="patient-page-main">
+    <div class="patient-page__main">
       <!-- 筛选区（样式见 styles/filter-section.css） -->
-      <el-card class="filter-section">
+      <el-card class="patient-page__filter-card">
         <div>筛选</div>
         <el-form :model="searchForm" inline>
           <el-form-item>
@@ -16,7 +16,7 @@
             />
           </el-form-item>
           <el-form-item>
-            <div class="patient-filter-daterange">
+            <div class="patient-page__filter-daterange">
               <el-date-picker
                 v-model="searchForm.dateRange"
                 type="daterange"
@@ -40,10 +40,10 @@
       </el-card>
 
       <!-- 患者列表区 -->
-      <el-card class="table-card">
-        <div class="table-header">
+      <el-card class="patient-page__table-card">
+        <div class="patient-page__table-header">
           <div>患者列表</div>
-          <div class="table-header-right">
+          <div class="patient-page__table-header-actions">
             <el-button :icon="Close" :disabled="!selectedRows.length" @click="handleClearSelection">
               清空勾选
             </el-button>
@@ -53,11 +53,11 @@
           </div>
         </div>
 
-        <div class="table-scroll-wrap">
+        <div class="patient-page__table-scroll">
           <el-table
             ref="tableRef"
             v-loading="loading"
-            class="patient-table-nowrap"
+            class="patient-page__table"
             :data="patients"
             stripe
             @selection-change="handleSelectionChange"
@@ -83,17 +83,17 @@
               label="标签"
               align="center"
               min-width="160"
-              class-name="patient-tags-col"
+              class-name="patient-page__tags-column"
             >
               <template #default="{ row }">
-                <div v-if="patientTagList(row).length" class="patient-tags-wrap">
+                <div v-if="patientTagList(row).length" class="patient-page__tags">
                   <el-tag
                     v-for="t in patientTagList(row)"
                     :key="t"
                     type="info"
                     effect="plain"
                     size="small"
-                    class="patient-tag-chip"
+                    class="patient-page__tag"
                   >
                     {{ t }}
                   </el-tag>
@@ -117,10 +117,10 @@
               align="center"
               min-width="220"
               fixed="right"
-              class-name="patient-actions-col"
+              class-name="patient-page__actions-column"
             >
               <template #default="{ row }">
-                <div class="patient-actions-wrap">
+                <div class="patient-page__actions">
                   <el-button type="primary" @click="handleView(row)">详情</el-button>
                   <el-button type="warning" @click="handleEdit(row)">编辑</el-button>
                   <el-popconfirm
@@ -139,7 +139,7 @@
           </el-table>
         </div>
 
-        <div class="pagination-wrapper">
+        <div class="patient-page__pagination">
           <el-pagination
             v-model:current-page="pagination.page"
             v-model:page-size="pagination.pageSize"
@@ -351,7 +351,7 @@ watch(
   box-sizing: border-box;
 }
 
-.patient-page-main {
+.patient-page__main {
   flex: 1;
   min-width: 0;
   display: flex;
@@ -359,61 +359,61 @@ watch(
   gap: 16px;
 }
 
-.patient-filter-daterange {
+.patient-page__filter-daterange {
   width: 300px;
   max-width: 100%;
 }
 
-.patient-filter-daterange :deep(.el-date-editor.el-input__wrapper) {
+.patient-page__filter-daterange :deep(.el-date-editor.el-input__wrapper) {
   width: 100%;
   box-sizing: border-box;
 }
 
-.table-card :deep(.el-card__body) {
+.patient-page__table-card :deep(.el-card__body) {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.table-header {
+.patient-page__table-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.table-header-right {
+.patient-page__table-header-actions {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-.table-header-right :deep(.el-button + .el-button) {
+.patient-page__table-header-actions :deep(.el-button + .el-button) {
   margin-left: 0;
 }
 
-.table-scroll-wrap {
+.patient-page__table-scroll {
   width: 100%;
   overflow-x: auto;
 }
 
-.patient-table-nowrap {
+.patient-page__table {
   min-width: 1240px;
 }
 
-.patient-table-nowrap :deep(.el-table__header .cell),
-.patient-table-nowrap :deep(.el-table__body .cell) {
+.patient-page__table :deep(.el-table__header .cell),
+.patient-page__table :deep(.el-table__body .cell) {
   white-space: nowrap;
 }
 
-.patient-table-nowrap :deep(.patient-tags-col .cell) {
+.patient-page__table :deep(.patient-page__tags-column .cell) {
   white-space: normal;
 }
 
-.patient-table-nowrap :deep(.patient-actions-col .cell) {
+.patient-page__table :deep(.patient-page__actions-column .cell) {
   white-space: normal;
 }
 
-.patient-actions-wrap {
+.patient-page__actions {
   display: inline-flex;
   flex-wrap: nowrap;
   align-items: center;
@@ -421,11 +421,11 @@ watch(
   gap: 8px;
 }
 
-.patient-actions-wrap :deep(.el-button + .el-button) {
+.patient-page__actions :deep(.el-button + .el-button) {
   margin-left: 0;
 }
 
-.patient-tags-wrap {
+.patient-page__tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -433,11 +433,11 @@ watch(
   align-items: center;
 }
 
-.patient-tag-chip {
+.patient-page__tag {
   margin: 0;
 }
 
-.pagination-wrapper {
+.patient-page__pagination {
   display: flex;
   justify-content: flex-end;
 }

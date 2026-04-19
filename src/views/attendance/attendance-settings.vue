@@ -1,18 +1,18 @@
 <template>
   <div class="attendance-settings-page">
-    <div class="settings-toolbar">
+    <div class="attendance-settings-page__toolbar">
       <el-button text bg type="primary" @click="router.push('/attendance')">
         <el-icon><ArrowLeft /></el-icon> 返回考勤打卡
       </el-button>
     </div>
 
-    <el-card class="fence-settings-card" shadow="hover">
+    <el-card class="attendance-settings-page__card" shadow="hover">
       <template #header>
-        <div class="fence-settings-header">
-          <span class="card-title">
+        <div class="attendance-settings-page__card-header">
+          <span class="attendance-settings-page__card-title">
             <el-icon><MapLocation /></el-icon> 打卡范围配置
           </span>
-          <div class="fence-source-tags">
+          <div class="attendance-settings-page__source-tags">
             <el-tag v-if="geofenceCfg.source === 'database'" type="success" size="small">
               生效：页面保存
             </el-tag>
@@ -24,13 +24,13 @@
         </div>
       </template>
 
-      <el-alert type="info" :closable="false" show-icon class="fence-tip">
+      <el-alert type="info" :closable="false" show-icon class="attendance-settings-page__tip">
         在此填写中心点经纬度、半径与名称并保存后，会写入数据库并<strong>立即生效</strong>，
         优先于服务端 `.env` 中的 `ATTENDANCE_GEOFENCE_*` 配置。可拖动地图标记或点击地图修改中心点；
         “清除页面配置”后恢复为 `.env` 配置。
       </el-alert>
 
-      <el-form label-position="top" class="fence-form" @submit.prevent>
+      <el-form label-position="top" class="attendance-settings-page__form" @submit.prevent>
         <el-row :gutter="16">
           <el-col :xs="24" :sm="12" :md="6">
             <el-form-item label="纬度 LAT">
@@ -39,7 +39,7 @@
                 :precision="6"
                 :step="0.0001"
                 controls-position="right"
-                class="fence-input-num"
+                class="attendance-settings-page__input-number"
                 @change="syncFenceMapFromEditor"
               />
             </el-form-item>
@@ -51,7 +51,7 @@
                 :precision="6"
                 :step="0.0001"
                 controls-position="right"
-                class="fence-input-num"
+                class="attendance-settings-page__input-number"
                 @change="syncFenceMapFromEditor"
               />
             </el-form-item>
@@ -64,7 +64,7 @@
                 :max="50000"
                 :step="10"
                 controls-position="right"
-                class="fence-input-num"
+                class="attendance-settings-page__input-number"
               />
             </el-form-item>
           </el-col>
@@ -75,7 +75,7 @@
           </el-col>
         </el-row>
 
-        <div class="fence-actions">
+        <div class="attendance-settings-page__actions">
           <el-button @click="fillFenceFromCurrentLocation">
             <el-icon><Location /></el-icon> 用当前位置填入
           </el-button>
@@ -91,8 +91,10 @@
         </div>
       </el-form>
 
-      <p class="fence-map-hint">地图：拖动标记或点击地图设置中心点；圆圈为允许打卡半径。</p>
-      <div ref="fenceMapRef" class="fence-map" />
+      <p class="attendance-settings-page__map-hint">
+        地图：拖动标记或点击地图设置中心点；圆圈为允许打卡半径。
+      </p>
+      <div ref="fenceMapRef" class="attendance-settings-page__map" />
     </el-card>
   </div>
 </template>
@@ -435,11 +437,11 @@ onUnmounted(() => {
   box-sizing: border-box;
 }
 
-.settings-toolbar {
+.attendance-settings-page__toolbar {
   margin-bottom: 16px;
 }
 
-.card-title {
+.attendance-settings-page__card-title {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -447,11 +449,11 @@ onUnmounted(() => {
   font-size: 15px;
 }
 
-.fence-settings-card {
+.attendance-settings-page__card {
   margin-bottom: 16px;
 }
 
-.fence-settings-header {
+.attendance-settings-page__card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -459,38 +461,38 @@ onUnmounted(() => {
   gap: 8px;
 }
 
-.fence-source-tags {
+.attendance-settings-page__source-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
 
-.fence-tip {
+.attendance-settings-page__tip {
   margin-bottom: 16px;
 }
 
-.fence-form :deep(.el-form-item) {
+.attendance-settings-page__form :deep(.el-form-item) {
   margin-bottom: 12px;
 }
 
-.fence-input-num {
+.attendance-settings-page__input-number {
   width: 100%;
 }
 
-.fence-actions {
+.attendance-settings-page__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 8px;
 }
 
-.fence-map-hint {
+.attendance-settings-page__map-hint {
   margin: 0 0 8px;
   font-size: var(--el-font-size-extra-small);
   color: #909399;
 }
 
-.fence-map {
+.attendance-settings-page__map {
   width: 100%;
   height: min(52vh, 420px);
   min-height: 240px;
@@ -505,16 +507,16 @@ onUnmounted(() => {
     padding: 12px;
   }
 
-  .fence-actions {
+  .attendance-settings-page__actions {
     flex-direction: column;
   }
 
-  .fence-actions .el-button {
+  .attendance-settings-page__actions .el-button {
     margin-left: 0;
     width: 100%;
   }
 
-  .fence-map {
+  .attendance-settings-page__map {
     height: 45vh;
     min-height: 220px;
   }

@@ -1,29 +1,29 @@
 <template>
   <div class="login-page">
-    <div class="bg-decoration">
-      <div class="circle circle-1" />
-      <div class="circle circle-2" />
-      <div class="circle circle-3" />
+    <div class="login-page__background">
+      <div class="login-page__circle login-page__circle--1" />
+      <div class="login-page__circle login-page__circle--2" />
+      <div class="login-page__circle login-page__circle--3" />
     </div>
 
-    <div class="login-container">
-      <div class="login-banner">
-        <div class="banner-content">
-          <div class="logo-icon">
+    <div class="login-page__container">
+      <div class="login-page__banner">
+        <div class="login-page__banner-content">
+          <div class="login-page__logo-icon">
             <el-icon :size="48"><SetUp /></el-icon>
           </div>
           <h1>口腔门诊管理系统</h1>
           <p>专业、高效、智能的口腔诊疗管理平台</p>
-          <div class="feature-list">
-            <div class="feature-item">
+          <div class="login-page__feature-list">
+            <div class="login-page__feature-item">
               <el-icon><UserFilled /></el-icon>
               <span>患者档案管理</span>
             </div>
-            <div class="feature-item">
+            <div class="login-page__feature-item">
               <el-icon><Calendar /></el-icon>
               <span>智能预约排班</span>
             </div>
-            <div class="feature-item">
+            <div class="login-page__feature-item">
               <el-icon><DataAnalysis /></el-icon>
               <span>经营数据分析</span>
             </div>
@@ -31,8 +31,8 @@
         </div>
       </div>
 
-      <div class="login-form-wrapper">
-        <div class="form-header">
+      <div class="login-page__form-wrapper">
+        <div class="login-page__form-header">
           <h2>欢迎回来</h2>
           <p>请输入您的账号信息登录系统</p>
         </div>
@@ -52,18 +52,23 @@
             />
           </el-form-item>
 
-          <div class="form-options">
+          <div class="login-page__form-options">
             <el-checkbox v-model="rememberMe">记住密码</el-checkbox>
           </div>
 
           <el-form-item>
-            <el-button type="primary" class="login-btn" :loading="loading" @click="handleLogin">
+            <el-button
+              type="primary"
+              class="login-page__submit-button"
+              :loading="loading"
+              @click="handleLogin"
+            >
               {{ loading ? "登录中..." : "登 录" }}
             </el-button>
           </el-form-item>
         </el-form>
 
-        <div class="form-footer">
+        <div class="login-page__form-footer">
           <span>© 2026 口腔门诊管理系统</span>
         </div>
       </div>
@@ -122,20 +127,20 @@ async function handleLogin() {
   padding: 20px;
 }
 
-.bg-decoration {
+.login-page__background {
   position: absolute;
   inset: 0;
   pointer-events: none;
 }
 
-.circle {
+.login-page__circle {
   position: absolute;
   border-radius: 50%;
   opacity: 0.08;
   background: #fff;
 }
 
-.circle-1 {
+.login-page__circle--1 {
   width: 600px;
   height: 600px;
   top: -200px;
@@ -143,7 +148,7 @@ async function handleLogin() {
   animation: float 20s ease-in-out infinite;
 }
 
-.circle-2 {
+.login-page__circle--2 {
   width: 400px;
   height: 400px;
   bottom: -150px;
@@ -151,7 +156,7 @@ async function handleLogin() {
   animation: float 15s ease-in-out infinite reverse;
 }
 
-.circle-3 {
+.login-page__circle--3 {
   width: 200px;
   height: 200px;
   top: 50%;
@@ -172,7 +177,7 @@ async function handleLogin() {
   }
 }
 
-.login-container {
+.login-page__container {
   display: flex;
   width: 880px;
   max-width: 100%;
@@ -194,7 +199,7 @@ async function handleLogin() {
   }
 }
 
-.login-banner {
+.login-page__banner {
   flex: 1;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
   backdrop-filter: blur(20px);
@@ -205,11 +210,11 @@ async function handleLogin() {
   color: #fff;
 }
 
-.banner-content {
+.login-page__banner-content {
   text-align: center;
 }
 
-.logo-icon {
+.login-page__logo-icon {
   width: 80px;
   height: 80px;
   border-radius: 20px;
@@ -221,20 +226,20 @@ async function handleLogin() {
   backdrop-filter: blur(10px);
 }
 
-.banner-content h1 {
+.login-page__banner-content h1 {
   font-size: 26px;
   font-weight: 700;
   margin: 0 0 12px;
   letter-spacing: 2px;
 }
 
-.banner-content > p {
+.login-page__banner-content > p {
   font-size: var(--el-font-size-base);
   opacity: 0.85;
   margin: 0 0 36px;
 }
 
-.feature-list {
+.login-page__feature-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -243,7 +248,7 @@ async function handleLogin() {
   width: fit-content;
 }
 
-.feature-item {
+.login-page__feature-item {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -256,11 +261,11 @@ async function handleLogin() {
   transition: background 0.3s;
 }
 
-.feature-item:hover {
+.login-page__feature-item:hover {
   background: rgba(255, 255, 255, 0.2);
 }
 
-.login-form-wrapper {
+.login-page__form-wrapper {
   flex: 1;
   background: #fff;
   padding: 48px 40px;
@@ -269,31 +274,31 @@ async function handleLogin() {
   justify-content: center;
 }
 
-.form-header {
+.login-page__form-header {
   margin-bottom: 36px;
 }
 
-.form-header h2 {
+.login-page__form-header h2 {
   font-size: 24px;
   font-weight: 700;
   color: #1a1a2e;
   margin: 0 0 8px;
 }
 
-.form-header p {
+.login-page__form-header p {
   font-size: var(--el-font-size-base);
   color: #909399;
   margin: 0;
 }
 
-.form-options {
+.login-page__form-options {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
 }
 
-.login-btn {
+.login-page__submit-button {
   width: 100%;
   height: 44px;
   font-weight: 600;
@@ -306,16 +311,16 @@ async function handleLogin() {
     transform 0.2s;
 }
 
-.login-btn:hover {
+.login-page__submit-button:hover {
   opacity: 0.9;
   transform: translateY(-1px);
 }
 
-.login-btn:active {
+.login-page__submit-button:active {
   transform: translateY(0);
 }
 
-.form-footer {
+.login-page__form-footer {
   margin-top: auto;
   padding-top: 24px;
   text-align: center;
@@ -348,16 +353,16 @@ async function handleLogin() {
 }
 
 @media (max-width: 768px) {
-  .login-banner {
+  .login-page__banner {
     display: none;
   }
 
-  .login-container {
+  .login-page__container {
     min-height: auto;
     border-radius: 16px;
   }
 
-  .login-form-wrapper {
+  .login-page__form-wrapper {
     padding: 36px 24px;
   }
 }

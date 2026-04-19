@@ -1,12 +1,12 @@
 <template>
-  <div class="staff-page">
-    <p class="page-hint">用于维护员工信息与员工登录账号，数据会写入 MySQL。</p>
+  <div class="staff-management-page">
+    <p class="staff-management-page__hint">用于维护员工信息与员工登录账号，数据会写入 MySQL。</p>
 
-    <el-card shadow="never" class="toolbar-card">
-      <div class="toolbar">
+    <el-card shadow="never" class="staff-management-page__toolbar-card">
+      <div class="staff-management-page__toolbar">
         <el-input
           v-model="keyword"
-          class="search-input"
+          class="staff-management-page__search-input"
           placeholder="搜索员工姓名 / 手机号 / 岗位 / 登录账号"
           clearable
           @clear="handleSearch"
@@ -16,7 +16,7 @@
       </div>
     </el-card>
 
-    <el-card shadow="never" class="table-card">
+    <el-card shadow="never" class="staff-management-page__table-card">
       <el-table v-loading="loading" :data="list" border stripe style="width: 100%">
         <el-table-column prop="name" label="员工姓名" min-width="100" />
         <el-table-column prop="phone" label="手机号" min-width="120" show-overflow-tooltip />
@@ -47,7 +47,7 @@
         </el-table-column>
       </el-table>
 
-      <div class="pagination-wrap">
+      <div class="staff-management-page__pagination">
         <el-pagination
           v-model:current-page="page"
           v-model:page-size="pageSize"
@@ -295,7 +295,7 @@ onMounted(() => fetchList());
 </script>
 
 <style scoped>
-.staff-page {
+.staff-management-page {
   padding: 16px;
   box-sizing: border-box;
   flex: 1;
@@ -305,45 +305,45 @@ onMounted(() => fetchList());
   gap: 12px;
 }
 
-.page-hint {
+.staff-management-page__hint {
   margin: 0;
   font-size: var(--el-font-size-small);
   color: #909399;
   line-height: 1.5;
 }
 
-.toolbar-card :deep(.el-card__body) {
+.staff-management-page__toolbar-card :deep(.el-card__body) {
   padding: 16px;
 }
 
-.toolbar {
+.staff-management-page__toolbar {
   display: flex;
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
 }
 
-.search-input {
+.staff-management-page__search-input {
   flex: 1;
   min-width: 280px;
   max-width: 560px;
 }
 
-.table-card {
+.staff-management-page__table-card {
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
 }
 
-.table-card :deep(.el-card__body) {
+.staff-management-page__table-card :deep(.el-card__body) {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 0;
 }
 
-.pagination-wrap {
+.staff-management-page__pagination {
   display: flex;
   justify-content: flex-end;
   margin-top: 16px;

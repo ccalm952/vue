@@ -87,7 +87,146 @@ pnpm dev:server
 - 注释和界面文案优先使用中文
 - 文本文件统一保存为 UTF-8
 
-## 说明
+## 服务器部署
 
-- `src/auto-imports.d.ts` 和 `src/components.d.ts` 由 Vite 插件自动生成
-- `server/dist/` 是构建产物，不应手动编辑
+当前项目的固定部署约定如下：
+
+- 服务器源码目录固定为 `/opt/vue`
+- 前端发布目录固定为 `/opt/1panel/www/sites/www.ccalm.xyz/index`
+- 前后端都在服务器上构建
+- 后端统一使用 `pm2 restart dental-api` 重启
+
+### 日常更新流程
+
+上传新代码覆盖 `/opt/vue` 后，在服务器执行：
+
+```bash
+cd /opt/vue
+pnpm install
+pnpm --dir server install
+pnpm build
+pnpm --dir server build
+rm -rf /opt/1panel/www/sites/www.ccalm.xyz/index/*
+cp -r /opt/vue/dist/. /opt/1panel/www/sites/www.ccalm.xyz/index/
+pm2 restart dental-api
+```
+
+更新后检查：
+
+```bash
+pm2 list
+pm2 logs dental-api --lines 50
+```
+
+### 新服务器首次部署流程
+
+适用于全新 Ubuntu 服务器，并使用 `1Panel` 托管前端站点。
+
+1. 安装基础环境
+
+```bash
+apt update && apt upgrade -y
+apt install -y curl wget git unzip tar
+```
+
+2. 安装 `nvm` 并安装最新 Node.js
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+source ~/.bashrc
+nvm install node
+nvm use node
+npm install -g pnpm pm2
+```
+
+3. 安装 `1Panel`
+
+```bash
+bash -c "$(curl -sSL https://resource.fit2cloud.com/1panel/package/v2/quick_start.sh)"
+```
+
+4. 将项目文件放到 `/opt/vue`
+
+保证最终目录结构类似：
+
+```text
+/opt/vue
+|-- src
+|-- public
+|-- server
+|-- package.json
+`-- ...
+```
+
+5. 安装前后端依赖
+
+```bash
+cd /opt/vue
+pnpm install
+pnpm --dir server install
+```
+
+6. 配置后端环境变量
+
+创建 `/opt/vue/server/.env`，至少配置：
+
+```env
+PORT=5321
+MYSQL_HOST=127.0.0.1
+MYSQL_PORT=3306
+MYSQL_USER=你的数据库用户
+MYSQL_PASSWORD=你的数据库密码
+MYSQL_DATABASE=dental
+```
+
+7. 构建前后端
+
+```bash
+cd /opt/vue
+pnpm build
+pnpm --dir server build
+```
+
+8. 启动后端
+
+```bash
+cd /opt/vue/server
+pm2 start dist/main.js --name dental-api
+pm2 save
+pm2 startup
+```
+
+执行 `pm2 startup` 输出的命令后，再运行：
+
+```bash
+pm2 save
+```
+
+9. 在 `1Panel` 中创建网站
+
+- 域名填写 `www.ccalm.xyz`
+- 网站目录使用 `1Panel` 默认生成的站点目录
+
+```bash
+rm -rf /opt/1panel/www/sites/www.ccalm.xyz/index/*
+cp -r /opt/vue/dist/. /opt/1panel/www/sites/www.ccalm.xyz/index/
+```
+
+10. 在 `1Panel` 中配置反向代理
+
+- 路径：`/api`
+- 目标地址：`http://127.0.0.1:5321`
+
+11. 在 `1Panel` 中申请并启用 HTTPS
+
+- 域名建议使用阿里云 DNS 校验
+- 启用成功后开启强制 HTTPS
+
+12. 验证部署
+
+```bash
+pm2 list
+pm2 logs dental-api --lines 50
+```
+
+浏览器访问 `https://www.ccalm.xyz`，确认前端页面和 `/api` 请求都正常。

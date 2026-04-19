@@ -1,11 +1,11 @@
 <template>
-  <div class="planting-page">
-    <el-card shadow="never" class="filter-card">
+  <div class="planting-query-page">
+    <el-card shadow="never" class="planting-query-page__filter-card">
       <template #header>
-        <span class="page-title">查询</span>
-        <span class="page-sub">按姓名、手机、病历号、日期筛选种植记录</span>
+        <span class="planting-query-page__title">查询</span>
+        <span class="planting-query-page__subtitle">按姓名、手机、病历号、日期筛选种植记录</span>
       </template>
-      <el-form :inline="true" class="filter-form">
+      <el-form :inline="true" class="planting-query-page__filter-form">
         <el-form-item label="姓名">
           <el-input v-model="filters.name" clearable placeholder="姓名" style="width: 140px" />
         </el-form-item>
@@ -16,7 +16,7 @@
           <el-input v-model="filters.chart" clearable placeholder="病历号" style="width: 140px" />
         </el-form-item>
         <el-form-item label="日期">
-          <div class="planting-filter-daterange">
+          <div class="planting-query-page__filter-daterange">
             <el-date-picker
               v-model="filters.dateRange"
               type="daterange"
@@ -35,8 +35,8 @@
       </el-form>
     </el-card>
 
-    <el-card shadow="never" class="table-card">
-      <div class="table-actions">
+    <el-card shadow="never" class="planting-query-page__table-card">
+      <div class="planting-query-page__table-actions">
         <el-button type="danger" plain :disabled="!selection.length" @click="onDelete">
           删除选中
         </el-button>
@@ -308,7 +308,7 @@ onMounted(() => load());
 </script>
 
 <style scoped>
-.planting-page {
+.planting-query-page {
   padding: 16px;
   max-width: 1400px;
   margin: 0 auto;
@@ -317,33 +317,33 @@ onMounted(() => load());
   gap: 16px;
 }
 
-.page-title {
+.planting-query-page__title {
   font-weight: 600;
   font-size: 16px;
   margin-right: 12px;
 }
 
-.page-sub {
+.planting-query-page__subtitle {
   font-size: var(--el-font-size-extra-small);
   color: var(--el-text-color-secondary);
 }
 
-.filter-card,
-.table-card {
+.planting-query-page__filter-card,
+.planting-query-page__table-card {
   border-radius: 10px;
 }
 
-.table-actions {
+.planting-query-page__table-actions {
   margin-bottom: 12px;
 }
 
 /* 与患者列表的日期筛选宽度保持一致。 */
-.planting-filter-daterange {
+.planting-query-page__filter-daterange {
   width: 300px;
   max-width: 100%;
 }
 
-.planting-filter-daterange :deep(.el-date-editor.el-input__wrapper) {
+.planting-query-page__filter-daterange :deep(.el-date-editor.el-input__wrapper) {
   width: 100%;
   box-sizing: border-box;
 }

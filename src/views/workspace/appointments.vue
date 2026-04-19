@@ -1,47 +1,66 @@
 <template>
-  <div class="appt-board">
+  <div class="appointments-page">
     <!-- 顶栏：周切换 + 日期范围 -->
-    <div class="board-toolbar">
-      <div class="board-toolbar-left">
+    <div class="appointments-page__toolbar">
+      <div class="appointments-page__toolbar-left">
         <el-button @click="prevWeek">上一周</el-button>
         <el-button @click="nextWeek">下一周</el-button>
         <el-button type="primary" @click="goThisWeek">回到本周</el-button>
       </div>
-      <div class="board-toolbar-center">{{ rangeLabel }}</div>
+      <div class="appointments-page__toolbar-center">{{ rangeLabel }}</div>
     </div>
 
     <!-- 周视图表格 -->
-    <div ref="gridWrapRef" class="board-grid-wrapper scrollbar-hide">
-      <div v-show="showNowLine" class="now-line-layer" :style="{ top: `${nowLineTopPx}px` }">
-        <span class="now-line-badge">{{ nowClock }}</span>
-        <div class="now-line-track">
-          <span class="now-line-dot" />
-          <span class="now-line-bar" />
-          <span class="now-line-dot" />
+    <div ref="gridWrapRef" class="appointments-page__grid-wrapper scrollbar-hide">
+      <div
+        v-show="showNowLine"
+        class="appointments-page__now-line-layer"
+        :style="{ top: `${nowLineTopPx}px` }"
+      >
+        <span class="appointments-page__now-line-badge">{{ nowClock }}</span>
+        <div class="appointments-page__now-line-track">
+          <span class="appointments-page__now-line-dot" />
+          <span class="appointments-page__now-line-bar" />
+          <span class="appointments-page__now-line-dot" />
         </div>
       </div>
-      <table class="board-grid" cellspacing="0" cellpadding="0">
+      <table class="appointments-page__grid" cellspacing="0" cellpadding="0">
         <thead>
           <tr>
-            <th class="col-hour">时</th>
-            <th class="col-min">分</th>
-            <th v-for="d in weekDays" :key="d.key" class="col-day" :class="{ today: d.isToday }">
-              <div class="day-label">{{ d.weekLabel }}</div>
-              <div class="day-date">{{ d.shortDate }}</div>
+            <th class="appointments-page__col-hour">时</th>
+            <th class="appointments-page__col-minute">分</th>
+            <th
+              v-for="d in weekDays"
+              :key="d.key"
+              class="appointments-page__col-day"
+              :class="{ 'appointments-page__col-day--today': d.isToday }"
+            >
+              <div class="appointments-page__day-label">{{ d.weekLabel }}</div>
+              <div class="appointments-page__day-date">{{ d.shortDate }}</div>
             </th>
-            <th class="col-min col-min-mirror">分</th>
-            <th class="col-hour col-hour-mirror">时</th>
+            <th
+              class="appointments-page__col-minute appointments-page__col-minute--mirror"
+            >
+              分
+            </th>
+            <th class="appointments-page__col-hour appointments-page__col-hour--mirror">时</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="slot in timeSlots" :key="slot.key" :class="{ 'hour-first': slot.min === 0 }">
-            <td v-if="slot.min === 0" class="col-hour" rowspan="4">{{ slot.hour }}</td>
-            <td class="col-min">{{ slot.minLabel }}</td>
+          <tr
+            v-for="slot in timeSlots"
+            :key="slot.key"
+            :class="{ 'appointments-page__hour-first': slot.min === 0 }"
+          >
+            <td v-if="slot.min === 0" class="appointments-page__col-hour" rowspan="4">
+              {{ slot.hour }}
+            </td>
+            <td class="appointments-page__col-minute">{{ slot.minLabel }}</td>
             <td
               v-for="d in weekDays"
               :key="d.key + slot.key"
-              class="col-day-cell"
-              :class="{ today: d.isToday }"
+              class="appointments-page__col-day-cell"
+              :class="{ 'appointments-page__col-day-cell--today': d.isToday }"
             >
               <el-popover
                 v-for="appt in getAppointmentsAt(d.dateStr, slot.hour, slot.min)"
@@ -50,43 +69,43 @@
                 placement="bottom-start"
                 :width="360"
                 :teleported="true"
-                popper-class="appt-summary-popper"
+                popper-class="appointments-page__summary-popper"
                 @show="ensurePatientSummary(appt)"
               >
                 <template #reference>
                   <div
-                    class="appt-card-anchor"
+                    class="appointments-page__card-anchor"
                     :style="apptCardAnchorStyle(appt)"
                     :title="`${displayPatientName(appt)} - ${appt.doctorName}\n${appt.visitType} ${appt.duration}分钟`"
                     @click.stop
                   >
-                    <div class="appt-card">
-                      <div class="appt-card-head">
-                        <span class="appt-card-head-text"
+                    <div class="appointments-page__card">
+                      <div class="appointments-page__card-head">
+                        <span class="appointments-page__card-head-text"
                           >{{ displayPatientName(appt) }}/初诊医生：{{ appt.doctorName }}</span
                         >
                       </div>
-                      <div class="appt-card-body">
-                        <span class="appt-card-record"
+                      <div class="appointments-page__card-body">
+                        <span class="appointments-page__card-record"
                           >病历号：{{ patientRecordLabel(appt.patientId) }}</span
                         >
                       </div>
                     </div>
                   </div>
                 </template>
-                <div class="appt-popover-panel">
-                  <div class="appt-popover-title">患者信息</div>
-                  <div class="appt-summary-body">
+                <div class="appointments-page__popover-panel">
+                  <div class="appointments-page__popover-title">患者信息</div>
+                  <div class="appointments-page__summary-body">
                     <div
                       v-for="row in patientPopoverRows(appt)"
                       :key="row.label"
-                      class="appt-summary-row"
+                      class="appointments-page__summary-row"
                     >
-                      <span class="appt-summary-label">{{ row.label }}</span>
-                      <span class="appt-summary-value">{{ row.value }}</span>
+                      <span class="appointments-page__summary-label">{{ row.label }}</span>
+                      <span class="appointments-page__summary-value">{{ row.value }}</span>
                     </div>
                   </div>
-                  <div class="appt-popover-footer">
+                  <div class="appointments-page__popover-footer">
                     <el-button type="primary" plain @click="openModifyAppointment(appt)">
                       修改
                     </el-button>
@@ -94,8 +113,14 @@
                 </div>
               </el-popover>
             </td>
-            <td class="col-min col-min-mirror">{{ slot.minLabel }}</td>
-            <td v-if="slot.min === 0" class="col-hour col-hour-mirror" rowspan="4">
+            <td class="appointments-page__col-minute appointments-page__col-minute--mirror">
+              {{ slot.minLabel }}
+            </td>
+            <td
+              v-if="slot.min === 0"
+              class="appointments-page__col-hour appointments-page__col-hour--mirror"
+              rowspan="4"
+            >
               {{ slot.hour }}
             </td>
           </tr>
@@ -384,7 +409,7 @@ function getAppointmentsAt(dateStr: string, hour: number, slotMin: number) {
   return appointmentsByCellKey.value.get(key) ?? [];
 }
 
-// 与样式中 .appt-board --appt-grid-row-h / .col-day-cell 一致
+// 与样式中 .appointments-page --appt-grid-row-h / .appointments-page__col-day-cell 一致
 const ROW_H = 28;
 /** 卡片相对「整块占用行」上下留白；垂直为 0 以便标签头高度与表格行高一致 */
 const APPT_INSET_Y = 0;
@@ -435,7 +460,7 @@ function syncNowLine() {
     return;
   }
 
-  const thead = wrap.querySelector(".board-grid thead") as HTMLElement | null;
+  const thead = wrap.querySelector(".appointments-page__grid thead") as HTMLElement | null;
   const theadH = thead?.offsetHeight ?? 56;
   nowLineTopPx.value = theadH + (m0 / 15) * ROW_H;
   showNowLine.value = true;
@@ -493,7 +518,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.appt-board {
+.appointments-page {
   --appt-grid-row-h: 28px;
   flex: 1;
   min-height: 0;
@@ -503,7 +528,7 @@ onBeforeUnmount(() => {
   box-sizing: border-box;
 }
 
-.board-toolbar {
+.appointments-page__toolbar {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -512,7 +537,7 @@ onBeforeUnmount(() => {
   min-height: 32px;
 }
 
-.board-toolbar-left {
+.appointments-page__toolbar-left {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
@@ -520,7 +545,7 @@ onBeforeUnmount(() => {
   flex-wrap: nowrap;
 }
 
-.board-toolbar-center {
+.appointments-page__toolbar-center {
   flex: 1;
   text-align: center;
   font-size: 16px;
@@ -528,7 +553,7 @@ onBeforeUnmount(() => {
   white-space: nowrap;
 }
 
-.board-grid-wrapper {
+.appointments-page__grid-wrapper {
   position: relative;
   flex: 1;
   min-height: 0;
@@ -538,7 +563,7 @@ onBeforeUnmount(() => {
   background: #fff;
 }
 
-.now-line-layer {
+.appointments-page__now-line-layer {
   position: absolute;
   left: 0;
   right: 0;
@@ -548,7 +573,7 @@ onBeforeUnmount(() => {
   transform: translateY(-50%);
 }
 
-.now-line-badge {
+.appointments-page__now-line-badge {
   position: absolute;
   left: 6px;
   top: 50%;
@@ -564,7 +589,7 @@ onBeforeUnmount(() => {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
-.now-line-track {
+.appointments-page__now-line-track {
   box-sizing: border-box;
   margin-left: v-bind(timeAxisWidthCss);
   margin-right: v-bind(timeAxisWidthCss);
@@ -573,7 +598,7 @@ onBeforeUnmount(() => {
   height: 2px;
 }
 
-.now-line-dot {
+.appointments-page__now-line-dot {
   width: 8px;
   height: 8px;
   flex-shrink: 0;
@@ -581,27 +606,27 @@ onBeforeUnmount(() => {
   background: #f56c6c;
 }
 
-.now-line-bar {
+.appointments-page__now-line-bar {
   flex: 1;
   height: 2px;
   background: #f56c6c;
 }
 
-.board-grid {
+.appointments-page__grid {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
 }
 
-.board-grid thead {
+.appointments-page__grid thead {
   position: sticky;
   top: 0;
   z-index: 2;
   background: #fff;
 }
 
-.board-grid th,
-.board-grid td {
+.appointments-page__grid th,
+.appointments-page__grid td {
   box-sizing: border-box;
   border: 1px solid #ebeef5;
   text-align: center;
@@ -609,13 +634,13 @@ onBeforeUnmount(() => {
   color: #606266;
 }
 
-.board-grid th {
+.appointments-page__grid th {
   padding: 8px 4px;
   font-weight: 600;
   background: #fafafa;
 }
 
-.col-hour {
+.appointments-page__col-hour {
   width: 36px;
   font-size: var(--el-font-size-small);
   font-weight: 600;
@@ -623,35 +648,35 @@ onBeforeUnmount(() => {
   vertical-align: middle;
 }
 
-.col-min {
+.appointments-page__col-minute {
   width: 32px;
   font-size: var(--el-font-size-extra-small);
   color: #909399;
 }
 
 /* 与左侧对称：紧邻日期列，略强调分隔 */
-.col-min-mirror {
+.appointments-page__col-minute--mirror {
   border-left: 1px solid #dcdfe6;
 }
 
-.col-day {
+.appointments-page__col-day {
   min-width: 100px;
 }
 
-.col-day.today {
+.appointments-page__col-day--today {
   background: #ecf5ff;
 }
 
-.day-label {
+.appointments-page__day-label {
   font-size: var(--el-font-size-small);
 }
 
-.day-date {
+.appointments-page__day-date {
   font-size: var(--el-font-size-extra-small);
   color: #909399;
 }
 
-.col-day-cell {
+.appointments-page__col-day-cell {
   height: var(--appt-grid-row-h, 28px);
   padding: 0;
   position: relative;
@@ -659,19 +684,19 @@ onBeforeUnmount(() => {
   overflow: visible;
 }
 
-.col-day-cell.today {
+.appointments-page__col-day-cell--today {
   background: #fafcff;
 }
 
-tr.hour-first td {
+tr.appointments-page__hour-first td {
   border-top: 1px solid #dcdfe6;
 }
 
-.appt-card-anchor {
+.appointments-page__card-anchor {
   cursor: pointer;
 }
 
-.appt-card {
+.appointments-page__card {
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -685,11 +710,11 @@ tr.hour-first td {
   box-sizing: border-box;
 }
 
-.appt-card:hover {
+.appointments-page__card:hover {
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
-.appt-card-head {
+.appointments-page__card-head {
   flex-shrink: 0;
   height: var(--appt-grid-row-h, 28px);
   min-height: var(--appt-grid-row-h, 28px);
@@ -701,7 +726,7 @@ tr.hour-first td {
   align-items: center;
 }
 
-.appt-card-head-text {
+.appointments-page__card-head-text {
   font-size: 16px;
   color: #303133;
   line-height: 1.2;
@@ -710,7 +735,7 @@ tr.hour-first td {
   text-overflow: ellipsis;
 }
 
-.appt-card-body {
+.appointments-page__card-body {
   flex: 1;
   min-height: 0;
   display: flex;
@@ -724,7 +749,7 @@ tr.hour-first td {
   box-sizing: border-box;
 }
 
-.appt-card-record {
+.appointments-page__card-record {
   display: block;
   font-size: 16px;
   font-weight: 500;
@@ -735,42 +760,42 @@ tr.hour-first td {
   text-overflow: ellipsis;
 }
 
-.appt-summary-body {
+.appointments-page__summary-body {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.appt-summary-row {
+.appointments-page__summary-row {
   display: flex;
   align-items: flex-start;
   gap: 12px;
   font-size: var(--el-font-size-base);
 }
 
-.appt-summary-label {
+.appointments-page__summary-label {
   flex: 0 0 72px;
   color: #909399;
 }
 
-.appt-summary-value {
+.appointments-page__summary-value {
   flex: 1;
   color: #303133;
   word-break: break-all;
 }
 
-.appt-popover-panel {
+.appointments-page__popover-panel {
   padding: 0;
 }
 
-.appt-popover-title {
+.appointments-page__popover-title {
   font-size: 15px;
   font-weight: 600;
   color: #303133;
   margin: 0 0 10px;
 }
 
-.appt-popover-footer {
+.appointments-page__popover-footer {
   margin-top: 12px;
   padding-top: 10px;
   border-top: 1px solid #ebeef5;
@@ -780,7 +805,7 @@ tr.hour-first td {
 
 <!-- teleported 浮层，需非 scoped 覆盖 popper 根节点 -->
 <style>
-.appt-summary-popper.el-popper {
+.appointments-page__summary-popper.el-popper {
   padding: 12px 14px 10px;
   border-radius: 8px;
 }

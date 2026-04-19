@@ -54,14 +54,15 @@
 
         <el-dialog
           v-model="searchDialogOpen"
-          title="搜索患者"
           width="min(560px, calc(100vw - 32px))"
           append-to-body
+          :show-close="false"
           class="patient-search-dialog"
           @opened="focusPatientSearchInput"
           @closed="closeSearchDialog"
         >
           <div
+            ref="patientSearchPanelRef"
             class="patient-search-dialog__inner"
             tabindex="-1"
             @keydown.capture="onPatientSearchKeydown"
@@ -73,57 +74,58 @@
               class="patient-search-dialog__input"
               placeholder="搜索姓名 / 手机 / 病历号"
             />
-            <div
-              v-if="headerSearchDropdownVisible"
-              class="patient-search-dialog__list"
-              role="listbox"
-              @mousedown.prevent
-            >
+            <div class="patient-search-dialog__body">
               <div
-                v-if="headerSearchLoading && !headerSearchResults.length"
-                class="patient-search-dialog__loading"
+                v-if="headerSearchDropdownVisible"
+                class="patient-search-dialog__list"
+                role="listbox"
+                @mousedown.prevent
               >
-                搜索中…
-              </div>
-              <el-scrollbar v-else-if="headerSearchResults.length" max-height="min(360px, 45vh)">
                 <div
-                  v-for="(row, idx) in headerSearchResults"
-                  :key="row.id"
-                  class="patient-search-dialog__item"
-                  :class="{
-                    'patient-search-dialog__item--highlight': highlightedSearchIndex === idx,
-                  }"
-                  role="option"
-                  @mousedown.prevent="openPatientDetail(row)"
+                  v-if="headerSearchLoading && !headerSearchResults.length"
+                  class="patient-search-dialog__loading"
                 >
-                  <div class="patient-search-dialog__item-name">{{ row.name || "—" }}</div>
-                  <div class="patient-search-dialog__item-meta">
-                    <span>病历号 {{ row.source || "—" }}</span>
-                    <span class="meta-dot">·</span>
-                    <span>手机 {{ row.phone || "—" }}</span>
-                    <span class="meta-dot">·</span>
-                    <span
-                      >年龄 {{ row.age != null && row.age !== "" ? `${row.age} 岁` : "—" }}</span
-                    >
-                    <span class="meta-dot">·</span>
-                    <span>初诊医生 {{ row.firstVisit || "—" }}</span>
-                  </div>
-                  <div class="patient-search-dialog__item-time">
-                    创建时间：{{ formatDateYyyyMmDd(row.createdAt) }}
-                  </div>
+                  搜索中…
                 </div>
-              </el-scrollbar>
-              <div v-else class="patient-search-dialog__empty">未找到患者</div>
+                <el-scrollbar v-else-if="headerSearchResults.length" max-height="min(360px, 45vh)">
+                  <div
+                    v-for="(row, idx) in headerSearchResults"
+                    :key="row.id"
+                    class="patient-search-dialog__item"
+                    :class="{
+                      'patient-search-dialog__item--highlight': highlightedSearchIndex === idx,
+                    }"
+                    role="option"
+                    @mousedown.prevent="openPatientDetail(row)"
+                  >
+                    <div class="patient-search-dialog__item-name">{{ row.name || "—" }}</div>
+                    <div class="patient-search-dialog__item-meta">
+                      <span>病历号 {{ row.source || "—" }}</span>
+                      <span class="meta-dot">·</span>
+                      <span>手机 {{ row.phone || "—" }}</span>
+                      <span class="meta-dot">·</span>
+                      <span
+                        >年龄 {{ row.age != null && row.age !== "" ? `${row.age} 岁` : "—" }}</span
+                      >
+                      <span class="meta-dot">·</span>
+                      <span>初诊医生 {{ row.firstVisit || "—" }}</span>
+                    </div>
+                    <div class="patient-search-dialog__item-time">
+                      创建时间：{{ formatDateYyyyMmDd(row.createdAt) }}
+                    </div>
+                  </div>
+                </el-scrollbar>
+                <div v-else class="patient-search-dialog__empty">未找到患者</div>
+              </div>
             </div>
-            <p v-else class="patient-search-dialog__placeholder">输入关键词搜索患者</p>
-            <div class="patient-search-dialog__hints" aria-hidden="true">
-              <span><kbd>Enter</kbd> 选择</span>
-              <span class="patient-search-dialog__hints-sep">·</span>
-              <span><kbd>↑</kbd><kbd>↓</kbd> 切换</span>
-              <span class="patient-search-dialog__hints-sep">·</span>
-              <span><kbd>Esc</kbd> 关闭</span>
-              <span class="patient-search-dialog__hints-sep">·</span>
-              <span><kbd>Ctrl</kbd><kbd>K</kbd> 打开</span>
+            <div class="patient-search-dialog__footer" aria-hidden="true">
+              <div class="patient-search-dialog__footer-hints">
+                <span><kbd>Enter</kbd> 选择</span>
+                <span class="patient-search-dialog__footer-sep">·</span>
+                <span><kbd>↑</kbd><kbd>↓</kbd> 切换</span>
+                <span class="patient-search-dialog__footer-sep">·</span>
+                <span><kbd>Esc</kbd> 关闭</span>
+              </div>
             </div>
           </div>
         </el-dialog>
@@ -211,7 +213,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, nextTick } from "vue";
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import { User, Setting, SwitchButton } from "@element-plus/icons-vue";
 import type { InputInstance } from "element-plus";
@@ -242,6 +244,28 @@ const {
 } = useHeaderPatientSearch();
 
 const patientSearchInputRef = ref<InputInstance>();
+const patientSearchPanelRef = ref<HTMLElement | null>(null);
+
+function scrollHighlightedPatientSearchIntoView() {
+  nextTick(() => {
+    requestAnimationFrame(() => {
+      const root = patientSearchPanelRef.value;
+      if (!root) return;
+      const el = root.querySelector(
+        ".patient-search-dialog__item--highlight",
+      ) as HTMLElement | null;
+      el?.scrollIntoView({ block: "nearest", inline: "nearest" });
+    });
+  });
+}
+
+watch(
+  () => [highlightedSearchIndex.value, headerSearchDropdownVisible.value] as const,
+  ([idx, open]) => {
+    if (!open || idx < 0) return;
+    scrollHighlightedPatientSearchIntoView();
+  },
+);
 
 function focusPatientSearchInput() {
   nextTick(() => {
@@ -373,12 +397,12 @@ async function handleCommand(command: string) {
 }
 
 .header-menu :deep(.el-menu-item) {
-  height: 32px;
+  height: 30px;
   padding: 0 8px;
 }
 
 .header-menu :deep(.el-sub-menu__title) {
-  height: 32px;
+  height: 30px;
   padding: 0 8px;
 }
 
@@ -396,22 +420,50 @@ async function handleCommand(command: string) {
 .header-search-actions__trigger {
   flex-shrink: 0;
   padding: 8px;
+  height: 30px;
 }
 
 .header-search-actions__icon {
   display: block;
   flex-shrink: 0;
-  height: 16px;
-  width: 16px;
+  height: 14px;
+  width: 14px;
   padding: 0 8px 0 0;
 }
 
 /* 患者搜索弹窗（内容在 .patient-search-dialog 上需 :deep 穿透 el-dialog） */
+.patient-search-dialog {
+  font-size: 14px;
+}
+
+.patient-search-dialog :deep(.el-dialog__header) {
+  display: none;
+}
+
+.patient-search-dialog :deep(.el-dialog__body) {
+  padding: 0;
+}
+
 .patient-search-dialog__inner {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: min(220px, 42vh);
   outline: none;
+  padding: 16px 16px 12px;
+}
+
+.patient-search-dialog__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 72px;
+  min-width: 0;
 }
 
 .patient-search-dialog__input {
+  flex-shrink: 0;
   width: 100%;
 }
 
@@ -434,18 +486,47 @@ async function handleCommand(command: string) {
   background: var(--el-color-primary-light-8);
 }
 
-.patient-search-dialog__placeholder {
-  color: var(--el-text-color-secondary);
-  font-size: var(--el-font-size-small);
-  margin: 12px 0 0;
-}
-
 .patient-search-dialog__list {
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
+  flex: 1;
   margin-top: 12px;
+  min-height: 0;
   overflow: hidden;
   text-align: left;
+}
+
+.patient-search-dialog__footer {
+  border-top: 1px solid var(--el-border-color-lighter);
+  flex-shrink: 0;
+  margin-top: 12px;
+  padding-top: 10px;
+}
+
+.patient-search-dialog__footer-hints {
+  align-items: center;
+  color: var(--el-text-color-secondary);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 12px;
+  gap: 6px 8px;
+  justify-content: flex-start;
+}
+
+.patient-search-dialog__footer-hints kbd {
+  background: var(--el-fill-color-light);
+  border: 1px solid var(--el-border-color);
+  border-radius: 4px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 6px;
+}
+
+.patient-search-dialog__footer-sep {
+  color: var(--el-text-color-placeholder);
+  user-select: none;
 }
 
 .patient-search-dialog__loading {
@@ -507,32 +588,6 @@ async function handleCommand(command: string) {
   text-align: center;
 }
 
-.patient-search-dialog__hints {
-  align-items: center;
-  border-top: 1px solid var(--el-border-color-lighter);
-  color: var(--el-text-color-secondary);
-  display: flex;
-  flex-wrap: wrap;
-  font-size: 12px;
-  gap: 4px 8px;
-  margin-top: 14px;
-  padding-top: 12px;
-}
-
-.patient-search-dialog__hints kbd {
-  background: var(--el-fill-color-light);
-  border: 1px solid var(--el-border-color);
-  border-radius: 4px;
-  font-family: inherit;
-  font-size: 11px;
-  padding: 2px 6px;
-}
-
-.patient-search-dialog__hints-sep {
-  color: var(--el-text-color-placeholder);
-  user-select: none;
-}
-
 /* 顶栏：新增患者 */
 .header-patient-actions {
   display: flex;
@@ -543,12 +598,13 @@ async function handleCommand(command: string) {
 .header-patient-actions__btn {
   flex-shrink: 0;
   padding: 8px;
+  height: 30px;
 }
 
 .header-patient-actions__icon {
   display: block;
-  height: 16px;
-  width: 16px;
+  height: 14px;
+  width: 14px;
 }
 
 /* 右侧：搜索 + 头像，整体贴右 */
